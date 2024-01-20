@@ -34,12 +34,13 @@ public class GameStateManager {
 	}
 
 	public static void updateStatus() {
-		currPresence.smallImageKey = menuCharacter.getAssetKey();
-		if(menuCharacter == Striker.NONE) {
+		Striker chara = location == Location.MENUS ? menuCharacter : ingameCharacter;
+		currPresence.smallImageKey = chara.getAssetKey();
+		if(chara == Striker.NONE) {
 			currPresence.smallImageText = null;
 		} else {
 			StringBuilder charaTooltip = new StringBuilder();
-			charaTooltip.append(menuCharacter.getTooltip());
+			charaTooltip.append(chara.getTooltip());
 			if (playerLevel > 0) {
 				charaTooltip.append(" | Lv. ").append(playerLevel);
 			}

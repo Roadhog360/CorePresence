@@ -62,9 +62,6 @@ public enum Arena {
 			return AHTEN_CITY;
 		}
 		for(Arena arena : values()) {
-			if(arena.getInternalName() == null) {
-				continue;
-			}
 			if(arena.getInternalName().replace("GameMap", "").equals(name)) {
 				return arena;
 			}

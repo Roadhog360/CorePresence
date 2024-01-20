@@ -20,7 +20,12 @@ public class LogManager {
 	}
 
 	public static void getActionFor(String logLine) {
-		boolean actionPerformed = false;
+		if(performAction(logLine)) {
+			GameStateManager.updateStatus();
+		}
+	}
+
+	private static boolean performAction(String logLine) {
 		//Gets the username of the player
 		String phrase = "LogPMIdentitySubsystem: UPMIdentitySubsystem::HandleSuccessfulLoginResponse - Logged in as user: ";
 		if(clearLogBrackets(logLine).startsWith(phrase)) {
@@ -29,7 +34,7 @@ public class LogManager {
 			String[] contents = name.split(" ");
 			GameStateManager.playerID = contents[contents.length - 1];
 			System.out.println("Setting player name/ID to: " + GameStateManager.playerName + " : " + GameStateManager.playerID);
-			actionPerformed = true;
+			return true;
 		}
 
 		//Gets the level of the player, and character
@@ -48,7 +53,7 @@ public class LogManager {
 							GameStateManager.playerLevel = element.getAsJsonObject().get("masteryLevel").getAsInt();
 							if(prevLevel != GameStateManager.playerLevel) {
 								System.out.println("Setting player level to: " + GameStateManager.playerLevel);
-								actionPerformed = true;
+								return true;
 							}
 							break;
 						}
@@ -73,17 +78,15 @@ public class LogManager {
 							}
 							if(charaChanged) {
 								System.out.println("Choosing character: " + selectedStriker.getTooltip());
-								actionPerformed = true;
+								return true;
 							}
-							break;
+							return false;
 						}
 					}
 				}
 			}
 		}
-		if(!watcher.isFirstRun() && actionPerformed) {
-			GameStateManager.updateStatus();
-		}
+		return false;
 	}
 
 	/**
