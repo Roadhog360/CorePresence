@@ -28,7 +28,7 @@ public class LogManager {
 			GameStateManager.playerName = name.substring(0, name.indexOf(" with id"));
 			String[] contents = name.split(" ");
 			GameStateManager.playerID = contents[contents.length - 1];
-			System.out.println("Setting player data to: " + GameStateManager.playerName + " : " + GameStateManager.playerID);
+			System.out.println("Setting player name/ID to: " + GameStateManager.playerName + " : " + GameStateManager.playerID);
 			actionPerformed = true;
 		}
 
@@ -37,7 +37,6 @@ public class LogManager {
 		if(clearLogBrackets(logLine).startsWith(phrase)) {
 			String rawData = clearLogBrackets(logLine).replace(phrase, "");
 			JsonElement data = JsonParser.parseString(rawData);
-			System.out.println(data);
 			if(data.isJsonObject()) {
 				if(data.getAsJsonObject().get("type").getAsString().equals("group-statusV2")) {
 					JsonObject playerData = JsonParser.parseString(data.getAsJsonObject().get("strData").getAsString()).getAsJsonObject().get("group").getAsJsonObject();
@@ -45,8 +44,12 @@ public class LogManager {
 					JsonArray players = playerData.get("players").getAsJsonArray();
 					for(JsonElement element : players.asList()) {
 						if(element.getAsJsonObject().get("playerId").getAsString().equals(GameStateManager.playerID)) {
+							int prevLevel = GameStateManager.playerLevel;
 							GameStateManager.playerLevel = element.getAsJsonObject().get("masteryLevel").getAsInt();
-							actionPerformed = true;
+							if(prevLevel != GameStateManager.playerLevel) {
+								System.out.println("Setting player level to: " + GameStateManager.playerLevel);
+								actionPerformed = true;
+							}
 							break;
 						}
 					}
@@ -54,11 +57,24 @@ public class LogManager {
 					JsonArray loadouts = playerData.get("playerLoadouts").getAsJsonArray();
 					for(JsonElement element : loadouts.asList()) {
 						if(element.getAsJsonObject().get("playerId").getAsString().equals(GameStateManager.playerID)) {
+							boolean charaChanged = false;
 							JsonObject loadout = element.getAsJsonObject().get("loadout").getAsJsonObject();
+							Striker selectedStriker = Striker.getFromInternalNameNoPrefixSuffix(loadout.get("characterAssetId").getAsString().replace("CD_", ""));
 							if(GameStateManager.location == Location.MENUS) {
-								GameStateManager.menuCharacter = Striker.getFromInternalNameNoPrefixSuffix(loadout.get("characterAssetId").getAsString().replace("CD_", ""));
+								if(GameStateManager.menuCharacter != selectedStriker) {
+									GameStateManager.menuCharacter = selectedStriker;
+									charaChanged = true;
+								}
+							} else {
+								if(GameStateManager.ingameCharacter != selectedStriker) {
+									GameStateManager.ingameCharacter = selectedStriker;
+									charaChanged = true;
+								}
 							}
-							actionPerformed = true;
+							if(charaChanged) {
+								System.out.println("Choosing character: " + selectedStriker.getTooltip());
+								actionPerformed = true;
+							}
 							break;
 						}
 					}

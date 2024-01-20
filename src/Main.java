@@ -17,7 +17,7 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		JFrame frame = new JFrame("Omega Strikers CorePresence test");
+		JFrame frame = new JFrame("Omega Strikers CorePresence");
 		JLabel text = new JLabel("Now goto Discord and set your active game to: '" + frame.getTitle() + "'");
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
@@ -26,10 +26,11 @@ public class Main {
 		frame.getContentPane().add(text, SwingConstants.CENTER);
 
 		frame.setResizable(true);
-		frame.setSize(550, 600);
+		frame.setSize(550, 100);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
-		addDebugButtons(frame);
+//		addDebugButtons(frame);
+//		frame.setSize(550, 600);
 
 		frame.setVisible(true);
 		frame.setResizable(false);

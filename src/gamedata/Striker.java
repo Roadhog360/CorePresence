@@ -65,6 +65,9 @@ public enum Striker {
 
 	public static Striker getFromInternalNameNoPrefixSuffix(String name) {
 		for(Striker striker : values()) {
+			if(striker.getInternalName() == null) {
+				continue;
+			}
 			if(striker.getInternalName().replace("C_", "").replace("_C", "").equals(name)) {
 				return striker;
 			}

@@ -54,8 +54,8 @@ public class LogWatcher extends Thread {
 					for(String line : newLines.toString().split("\n")) {
 //						System.out.println(line);
 						if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
-							DiscordRPC.discordClearPresence();
-							LogManager.setClosed(true);
+//							DiscordRPC.discordClearPresence();
+//							LogManager.setClosed(true);
 						} else if (line.startsWith("Log file open")) {
 							if(!firstRun) { //Log file was reopened
 								LogManager.setClosed(false);
@@ -67,7 +67,11 @@ public class LogWatcher extends Thread {
 //							if(firstRun) { //Do not update presence on first batch of lines read
 //								LogManager.setClosed(true);
 //							}
-							LogManager.getActionFor(line);
+							try {
+								LogManager.getActionFor(line);
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 //							if(firstRun) {  //Do not update presence on first batch of lines read
 //								LogManager.setClosed(false);
 //							}
@@ -86,6 +90,10 @@ public class LogWatcher extends Thread {
 				System.out.println("closed file");
 			}
 		}
+	}
+
+	private void startWatchingFile() {
+
 	}
 
 	public boolean isFirstRun() {
