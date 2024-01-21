@@ -30,11 +30,14 @@ public class LogWatcher extends Thread {
 	private String lastHash = "none";
 
 	public void watchFile() throws InterruptedException {
-		File file = new File(Utils.getFilePath() + "/OmegaStrikers.log");
+		File file = null;
 		long retryTime = runEvery * 3L;
 		LogManager.setClosed(true);
 		while (true) { //This is never supposed to end while the program is running
 			try {
+				if(file == null) { //Set it here to catch NoSuchFileException when the log is temporarily gone on restart
+					file = new File(Utils.getFilePath() + "/OmegaStrikers.log");
+				}
 				startWatchingFile(file);
 				System.out.println("Game closed or restarted, retrying in " + (double)(retryTime / 1000) + " seconds");
 				sleep(retryTime);
