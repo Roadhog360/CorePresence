@@ -63,23 +63,11 @@ public class LogManager {
 					JsonArray loadouts = playerData.get("playerLoadouts").getAsJsonArray();
 					for(JsonElement element : loadouts.asList()) {
 						if(element.getAsJsonObject().get("playerId").getAsString().equals(GameStateManager.playerID)) {
-							boolean charaChanged = false;
 							JsonObject loadout = element.getAsJsonObject().get("loadout").getAsJsonObject();
 							Striker selectedStriker = Striker.getFromInternalName(loadout.get("characterAssetId").getAsString().replace("CD_", ""));
-							if(GameStateManager.location == Location.MENUS) {
-								if(GameStateManager.menuCharacter != selectedStriker) {
-									GameStateManager.menuCharacter = selectedStriker;
-									GameStateManager.ingameCharacter = selectedStriker;
-									charaChanged = true;
-								}
-							} else {
-								if(GameStateManager.ingameCharacter != selectedStriker) {
-									GameStateManager.ingameCharacter = selectedStriker;
-									charaChanged = true;
-								}
-							}
-							if(charaChanged) {
-								System.out.println("Choosing character: " + selectedStriker.getTooltip());
+							if(GameStateManager.menuCharacter != selectedStriker) {
+								GameStateManager.menuCharacter = selectedStriker;
+								System.out.println("Choosing character in menu: " + selectedStriker.getTooltip());
 							}
 						}
 					}
@@ -114,6 +102,24 @@ public class LogManager {
 				GameStateManager.updateTime();
 				return true;
 			}
+		}
+
+		phrase = "LogPMVoiceOverManagerComponent: UPMVoiceOverManagerComponent::ProcessNewEvents - Processing New Event 'VOD_";
+		if(logLine.startsWith(phrase) && logLine.contains("CharacterIntro")) { //For now we determine character selected by VO data. This is unreliable and also late, there's hopefully a better way to do this
+			String voiceData = logLine.replace(phrase, "");
+			voiceData = voiceData.substring(0, voiceData.indexOf("_CharacterIntro"));
+			Striker selectedStriker = Striker.UNKNOWN_UNREGISTERED;
+			for(Striker striker : Striker.values()) { //These don't use character internal name for some reason, let's see if it matches any names...
+				if(striker == Striker.NONE) {
+					continue;
+				}
+				if(voiceData.equalsIgnoreCase(striker.getAssetKey()) || voiceData.equalsIgnoreCase(striker.getTooltip())) {
+					selectedStriker = striker;
+					break;
+				}
+			}
+			GameStateManager.ingameCharacter = selectedStriker;
+			System.out.println("Choosing character in game: " + selectedStriker.getTooltip());
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
