@@ -22,7 +22,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 
 	public static void setInMenus() {
 		updateTime();
-		Scoreboard.INSTANCE.resetScoreBoard();
+		Scoreboard.resetScoreBoard();
 		location = Location.MENUS;
 		arena = Arena.MENU;
 		updateStatus();
@@ -50,8 +50,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		currPresence.largeImageKey = arena.getAssetKey();
 		currPresence.largeImageText = arena.getTooltip();
 
-		GameProgress state = Scoreboard.INSTANCE.getGameState();
-		Scoreboard score = Scoreboard.INSTANCE;
+		GameProgress state = Scoreboard.getGameState();
 
 		currPresence.details = location.getDisplayName();
 		if(location.equals(Location.COMPETITIVE) && rank.getTooltip() != null) {
@@ -62,8 +61,8 @@ public class GameStateManager { //1869590 OS Steamapp ID
 			currPresence.state = null;
 		} else {
 			currPresence.state = String.format(state.getDisplayName(),
-					(score.getAllyScore() + "-" + score.getAllySetsWon() + " | " +
-							score.getEnemyScore() + "-" + score.getEnemySetsWon()));
+					(Scoreboard.getAllyScore() + "-" + Scoreboard.getAllySetsWon() + " | " +
+							Scoreboard.getEnemyScore() + "-" + Scoreboard.enemySetsWon()));
 		}
 		if(!LogManager.isClosed()) {
 			DiscordRPC.discordUpdatePresence(currPresence);
@@ -72,7 +71,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 	}
 
 	public static void clearPresence() {
-		Scoreboard.INSTANCE.resetScoreBoard();
+		Scoreboard.resetScoreBoard();
 		GameStateManager.setInMenus();
 		GameStateManager.ingameCharacter = GameStateManager.menuCharacter = Striker.NONE;
 	}

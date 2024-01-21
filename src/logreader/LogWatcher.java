@@ -7,6 +7,7 @@ import utils.Utils;
 import java.io.*;
 import java.math.BigInteger;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
 
@@ -14,6 +15,7 @@ public class LogWatcher extends Thread {
 
 	@Override
 	public void run() {
+		System.out.println("Initializing LogWatcher");
 		try {
 			watchFile();
 		} catch (InterruptedException e) {
@@ -30,12 +32,13 @@ public class LogWatcher extends Thread {
 	public void watchFile() throws InterruptedException {
 		File file = new File(Utils.getFilePath() + "/OmegaStrikers.log");
 		long retryTime = runEvery * 3L;
+		LogManager.setClosed(true);
 		while (true) { //This is never supposed to end while the program is running
 			try {
 				startWatchingFile(file);
 				System.out.println("Game closed or restarted, retrying in " + (double)(retryTime / 1000) + " seconds");
 				sleep(retryTime);
-			} catch (FileNotFoundException e) {
+			} catch (FileNotFoundException | NoSuchFileException e) {
 				System.out.println("Game closed or restarted, or log file not present, retrying in " + (double)(retryTime / 1000) + " seconds");
 				sleep(retryTime);
 			} catch (Exception e) {
@@ -69,30 +72,21 @@ public class LogWatcher extends Thread {
 					String line = lines[i];
 //						System.out.println(line);
 					if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
-						DiscordRPC.discordClearPresence();
-						LogManager.setClosed(true);
-						GameStateManager.clearPresence();
-						return;
+//						DiscordRPC.discordClearPresence();
+//						LogManager.setClosed(true);
+//						GameStateManager.clearPresence();
+//						return;
 					} else if (line.startsWith("Log file open")) {
 						if(!firstRun) { //Log file was reopened
 							LogManager.setClosed(false);
 							GameStateManager.clearPresence();
 						}
 					} else {
-						if(firstRun) { //Do not update presence on first batch of lines read
-							LogManager.setClosed(true);
-						}
-						try {
-							LogManager.getActionFor(line);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-						if(firstRun) {  //Do not update presence on first batch of lines read
-							LogManager.setClosed(false);
-						}
+						LogManager.getActionFor(LogManager.clearLogBrackets(line));
 					}
 
 					if(firstRun && i == lines.length - 1) { //After first run, update status to collected values
+						LogManager.setClosed(false);
 						GameStateManager.updateStatus();
 					}
 				}

@@ -1,14 +1,14 @@
 package logreader;
 
 import com.google.gson.*;
-import gamedata.Location;
-import gamedata.Striker;
+import gamedata.*;
 import managers.GameStateManager;
 
 public class LogManager {
 
 	private static boolean closed = false;
 	private static final LogWatcher watcher = new LogWatcher();
+	private static Location pendingLocation = Location.MENUS;
 
 	public static void init() {
 	}
@@ -18,16 +18,20 @@ public class LogManager {
 	}
 
 	public static void getActionFor(String logLine) {
-		if(performAction(logLine)) {
-			GameStateManager.updateStatus();
+		if(performAction(logLine.replaceFirst("\\r$", ""))) {
+			try {
+				GameStateManager.updateStatus();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	private static boolean performAction(String logLine) {
 		//Gets the username of the player
 		String phrase = "LogPMIdentitySubsystem: UPMIdentitySubsystem::HandleSuccessfulLoginResponse - Logged in as user: ";
-		if(clearLogBrackets(logLine).startsWith(phrase)) {
-			String name = clearLogBrackets(logLine).replace(phrase, "").replace("\r", "");
+		if(logLine.startsWith(phrase)) {
+			String name = logLine.replace(phrase, "");
 			GameStateManager.playerName = name.substring(0, name.indexOf(" with id"));
 			String[] contents = name.split(" ");
 			GameStateManager.playerID = contents[contents.length - 1];
@@ -37,8 +41,8 @@ public class LogManager {
 
 		//Gets the level of the player, and character
 		phrase = "LogPMServicesSubsystem: Warning: UPMServicesSubsystem::ConnectWebSocket::<lambda_964673719509e731966eb292ee6d2929>::operator () - WebSocketConnection->OnMessage: ";
-		if(clearLogBrackets(logLine).startsWith(phrase)) {
-			String rawData = clearLogBrackets(logLine).replace(phrase, "");
+		if(logLine.startsWith(phrase)) {
+			String rawData = logLine.replace(phrase, "");
 			JsonElement data = JsonParser.parseString(rawData);
 			if(data.isJsonObject()) {
 				if(data.getAsJsonObject().get("type").getAsString().equals("group-statusV2")) {
@@ -51,7 +55,6 @@ public class LogManager {
 							GameStateManager.playerLevel = element.getAsJsonObject().get("masteryLevel").getAsInt();
 							if(prevLevel != GameStateManager.playerLevel) {
 								System.out.println("Setting player level to: " + GameStateManager.playerLevel);
-								return true;
 							}
 							break;
 						}
@@ -62,10 +65,11 @@ public class LogManager {
 						if(element.getAsJsonObject().get("playerId").getAsString().equals(GameStateManager.playerID)) {
 							boolean charaChanged = false;
 							JsonObject loadout = element.getAsJsonObject().get("loadout").getAsJsonObject();
-							Striker selectedStriker = Striker.getFromInternalNameNoPrefixSuffix(loadout.get("characterAssetId").getAsString().replace("CD_", ""));
+							Striker selectedStriker = Striker.getFromInternalName(loadout.get("characterAssetId").getAsString().replace("CD_", ""));
 							if(GameStateManager.location == Location.MENUS) {
 								if(GameStateManager.menuCharacter != selectedStriker) {
 									GameStateManager.menuCharacter = selectedStriker;
+									GameStateManager.ingameCharacter = selectedStriker;
 									charaChanged = true;
 								}
 							} else {
@@ -76,13 +80,66 @@ public class LogManager {
 							}
 							if(charaChanged) {
 								System.out.println("Choosing character: " + selectedStriker.getTooltip());
-								return true;
 							}
-							return false;
 						}
+					}
+					return true;
+				}
+			}
+		}
+
+		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Queue Selection: ";
+		if(logLine.startsWith(phrase)) {
+			pendingLocation = Location.getFromKey(JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString());
+		}
+
+		phrase = "LogPMPlayerState: APMPlayerState::OnOwnerOnlyRep_MatchPhaseChangesListString - Applying Index '1' by calling APMGameState::PerformCurrentMatchPhaseEvents(EMatchPhase::PreGame, EMatchPhase::ArenaOverview)";
+		if(logLine.startsWith(phrase)) {
+			Scoreboard.resetScoreBoard();
+			Scoreboard.setGameState(GameProgress.BEGINNING);
+			GameStateManager.location = pendingLocation;
+			System.out.println("Setting game phase to beginning");
+		}
+
+		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
+		if(logLine.startsWith(phrase)) {
+			String[] stageInfo = logLine.replace(phrase, "")
+					.replace("[", "").replace("]", "").replace("GTD_", "").split(" ");
+			GameStateManager.arena = Arena.getFromInternalName(stageInfo[stageInfo.length - 1]); //Stage name is at end of string
+			System.out.println("Setting stage to: " + GameStateManager.arena.getTooltip());
+		}
+
+		phrase = "LogPMPlayerState: StreamTeamLevel Called, OldTeam";
+		if (logLine.startsWith(phrase)) {
+			String[] teamInfo = logLine.replace(phrase, "").split(" ");
+			String updatedValue = teamInfo[teamInfo.length - 1]; //Team that we changed to is at end of string
+			Scoreboard.setIsAllyTeamOne(updatedValue.replace("EAssignedTeam::Team", "").equalsIgnoreCase("one"));
+		}
+
+		phrase = "LogPMGameState: APMGameState::OnRep_MatchScoreInfo - Team";
+		if(logLine.startsWith(phrase)) {
+			String[] scoreInfo = logLine.replace(phrase, "").split(" ");
+			String updatedValue = scoreInfo[scoreInfo.length - 1];//Score to change to is at end of string
+			if(logLine.contains("NumPointsThisSet")) {
+				Scoreboard.setScore(updatedValue.replace("'s", ""), Integer.parseInt(updatedValue)); //Enemy is TeamOne and ally is TeamTwo
+			} else {
+				boolean wonMatch = logLine.contains("TeamThatWonMatch");
+				if(wonMatch) { //Winning team is in updatedValue position
+					String teamWonMatch = updatedValue.replace("'", "").replace("Team", "");
+					if(Scoreboard.isAllyTeamOne() ? teamWonMatch.equalsIgnoreCase("one") : teamWonMatch.equalsIgnoreCase("two")) {
+						System.out.println("You won!!!");
+						Scoreboard.setGameState(GameProgress.VICTORY);
+					} else {
+						System.out.println("You lose...");
+						Scoreboard.setGameState(GameProgress.DEFEAT);
+					}
+				} else {
+					if(!updatedValue.equalsIgnoreCase("'<unset>'")) {
+						Scoreboard.incrementSetsWon(updatedValue.replace("Team", ""));
 					}
 				}
 			}
+			return true;
 		}
 		return false;
 	}

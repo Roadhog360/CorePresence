@@ -1,64 +1,67 @@
 package gamedata;
 
 public class Scoreboard {
-	private int allyScore = 0;
-	private int allySetsWon = 0;
-	private int enemyScore = 0;
-	private int enemySetsWon = 0;
-	private GameProgress progress = GameProgress.MENU;
+	private static int teamOneScore = 0;
+	private static int teamOneSetsWon = 0;
+	private static int teamTwoScore = 0;
+	private static int teamTwoSetsWon = 0;
+	private static boolean isAllyTeamOne = true;
+	private static GameProgress progress = GameProgress.MENU;
 
-	public static final Scoreboard INSTANCE = new Scoreboard();
-
-	private Scoreboard() {}
-
-	public void setAllyScore(int allyScore) {
-		this.allyScore = allyScore;
+	public static int getAllyScore() {
+		return isAllyTeamOne ? teamOneScore : teamTwoScore;
 	}
 
-	public int getAllyScore() {
-		return allyScore;
+	public static int getEnemyScore() {
+		return !isAllyTeamOne ? teamOneScore : teamTwoScore;
 	}
 
-	public void setEnemyScore(int enemyScore) {
-		this.enemyScore = enemyScore;
+	public static int getAllySetsWon() {
+		return isAllyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
 	}
 
-	public int getEnemyScore() {
-		return enemyScore;
+	public static int enemySetsWon() {
+		return !isAllyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
 	}
 
-	public void setAllySetsWon(int allySetsWon, boolean sanitizeScore) {
-		if(sanitizeScore) {
-			allyScore = 0;
+	public static void setScore(String team, int score) {
+		if(team.equalsIgnoreCase("one")) {
+			teamOneScore = score;
+		} else {
+			teamTwoScore = score;
 		}
-		this.allySetsWon = allySetsWon;
 	}
 
-	public int getAllySetsWon() {
-		return allySetsWon;
+	public static void incrementSetsWon(String team) {
+		setsSetsWon(team, (isAllyTeamOne ? teamOneScore : teamTwoScore) + 1);
 	}
 
-	public void setEnemySetsWon(int enemySetsWon, boolean sanitizeScore) {
-		if(sanitizeScore) {
-			enemyScore = 0;
+	public static void setsSetsWon(String team, int score) {
+		if(team.equalsIgnoreCase("one")) {
+			teamOneSetsWon = score;
+		} else {
+			teamTwoSetsWon = score;
 		}
-		this.enemySetsWon = enemySetsWon;
 	}
 
-	public int getEnemySetsWon() {
-		return enemySetsWon;
-	}
-
-	public void resetScoreBoard() {
+	public static void resetScoreBoard() {
 		progress = GameProgress.MENU;
-		allyScore = allySetsWon = enemyScore = enemySetsWon = 0;
+		teamOneScore = teamOneSetsWon = teamTwoScore = teamTwoSetsWon = 0;
 	}
 
-	public GameProgress getGameState() {
+	public static GameProgress getGameState() {
 		return progress;
 	}
 
-	public void setGameState(GameProgress state) {
+	public static void setGameState(GameProgress state) {
 		progress = state;
+	}
+
+	public static boolean isAllyTeamOne() {
+		return isAllyTeamOne;
+	}
+
+	public static void setIsAllyTeamOne(boolean teamOne) {
+		isAllyTeamOne = teamOne;
 	}
 }

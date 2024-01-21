@@ -13,7 +13,7 @@ public enum Arena {
 	ONI_VILLAGE("GameMapOniVillage", "oni_village", "Oni Village"),
 	INKY_SPLASH_ZONE("GameMapSummerSplash", "inky_s_splash_zone", "Inky's Splash Zone"),
 	GATES_OF_OBSCURA("GameMapObscura", "gates_of_obscura", "Gates of Obscura"),
-	CLARION_TEST_CHAMBER("GameMapClarionCorp", "clarion_test_chamber_normal", "Clarion Test Chamber"),
+	CLARION_TEST_CHAMBER("GameMapClarionCorpDefault", "clarion_test_chamber_normal", "Clarion Test Chamber"),
 	TAIKO_TEMPLE("GameMapDrums", "taiko_temple", "Taiko Temple"),
 
 	CLARION_TEST_CHAMBER_BASSDROP("GameMapClarionCorpProjectThunderstruck", "clarion_test_chamber_project_bassdrop", "Clarion Test Chamber | Project: Bassdrop"),
@@ -46,18 +46,6 @@ public enum Arena {
 	}
 
 	public static Arena getFromInternalName(String name) {
-		if(name.equals("GameMapPractice")) {
-			return AHTEN_CITY;
-		}
-		for(Arena arena : values()) {
-			if(arena.getInternalName().equals(name)) {
-				return arena;
-			}
-		}
-		return UNKNOWN_UNREGISTERED;
-	}
-
-	public static Arena getFromInternalNameNoPrefix(String name) {
 		if(name.equals("Practice")) {
 			return AHTEN_CITY;
 		}
