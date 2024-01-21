@@ -79,34 +79,43 @@ public class LogManager {
 		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Queue Selection: ";
 		if(logLine.startsWith(phrase)) {
 			pendingLocation = Location.getFromKey(JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString());
+			return false;
 		}
 
 		phrase = "LogPMGameState: Display: APMGameState::PerformCurrentMatchPhaseEvents - Previous";
 		if(logLine.startsWith(phrase)) {
 			String[] gameStateInfo = logLine.replace(phrase, "").split(" ");
 			String updatedGameState = gameStateInfo[gameStateInfo.length - 1];
-			if(updatedGameState.equals("Current[EMatchPhase::PostGameSummary]")) {
-				System.out.println("Resetting game state to menu");
-				GameStateManager.setInMenus();
-				GameStateManager.ingameCharacter = Striker.NONE;
-				return true;
-			} else if (updatedGameState.equals("Current[EMatchPhase::ArenaOverview]")) {
-				Scoreboard.resetScoreBoard();
-				Scoreboard.setGameState(GameProgress.BEGINNING);
-				GameStateManager.location = pendingLocation;
-				System.out.println("Setting game phase to beginning");
-				GameStateManager.updateTime();
-				return true;
-			} else if (updatedGameState.equals("Current[EMatchPhase::VersusScreen]")) {
-				Scoreboard.setGameState(GameProgress.IN_GAME);
-				System.out.println("Setting game phase to ingame");
-				return true;
-			} else if (updatedGameState.equals("Current[EMatchPhase::IntermissionMvp]")) {
-				Scoreboard.setGameState(GameProgress.AWAKENING);
-				System.out.println("Entering Awakening Draft");
-			} else if (updatedGameState.equals("Current[EMatchPhase::FaceOffIntro]") && Scoreboard.getGameState() == GameProgress.AWAKENING) {
-				Scoreboard.setGameState(GameProgress.IN_GAME);
-				System.out.println("Leaving Awakening Draft");
+			switch (updatedGameState) {
+				case "Current[EMatchPhase::PostGameSummary]":
+					System.out.println("Resetting game state to menu");
+					GameStateManager.setInMenus();
+					GameStateManager.ingameCharacter = Striker.NONE;
+					return true;
+				case "Current[EMatchPhase::ArenaOverview]":
+					Scoreboard.resetScoreBoard();
+					Scoreboard.setGameState(GameProgress.BEGINNING);
+					GameStateManager.location = pendingLocation;
+					System.out.println("Setting game phase to beginning");
+					GameStateManager.updateTime();
+					return true;
+				case "Current[EMatchPhase::VersusScreen]":
+					Scoreboard.setGameState(GameProgress.IN_GAME);
+					System.out.println("Setting game phase to ingame");
+					return true;
+				case "Current[EMatchPhase::IntermissionMvp]":
+					Scoreboard.setGameState(GameProgress.AWAKENING);
+					System.out.println("Entering Awakening Draft");
+					return true;
+				case "Current[EMatchPhase::FaceOffIntro]":
+					if (Scoreboard.getGameState() == GameProgress.AWAKENING) {
+						Scoreboard.setGameState(GameProgress.IN_GAME);
+						System.out.println("Leaving Awakening Draft");
+						return true;
+					}
+					return false;
+				default:
+					break;
 			}
 		}
 
@@ -135,6 +144,7 @@ public class LogManager {
 					.replace("[", "").replace("]", "").replace("GTD_", "").split(" ");
 			GameStateManager.arena = Arena.getFromInternalName(stageInfo[stageInfo.length - 1]); //Stage name is at end of string
 			System.out.println("Setting stage to: " + GameStateManager.arena.getTooltip());
+			return true;
 		}
 
 		phrase = "LogPMPlayerState: StreamTeamLevel Called, OldTeam";
@@ -142,6 +152,7 @@ public class LogManager {
 			String[] teamInfo = logLine.replace(phrase, "").split(" ");
 			String updatedValue = teamInfo[teamInfo.length - 1]; //Team that we changed to is at end of string
 			Scoreboard.setAllyTeamOne(updatedValue.replace("EAssignedTeam::Team", "").equalsIgnoreCase("one"));
+			return false;
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_MatchScoreInfo - Team";

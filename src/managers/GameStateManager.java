@@ -25,6 +25,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		location = Location.MENUS;
 		arena = Arena.MENU;
 		updateTime();
+		updateStatus();
 	}
 
 	public static void updateTime() {
