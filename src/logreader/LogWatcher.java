@@ -74,13 +74,10 @@ public class LogWatcher extends Thread {
 					if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
 						DiscordRPC.discordClearPresence();
 						LogManager.setClosed(true);
-						GameStateManager.clearPresence();
+						GameStateManager.resetValues();
 						return;
 					} else if (line.startsWith("Log file open")) {
-						if(!firstRun) { //Log file was reopened
-							LogManager.setClosed(false);
-							GameStateManager.clearPresence();
-						}
+						GameStateManager.resetValues();
 					} else {
 						LogManager.getActionFor(LogManager.clearLogBrackets(line));
 					}

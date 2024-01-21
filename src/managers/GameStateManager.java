@@ -21,11 +21,10 @@ public class GameStateManager { //1869590 OS Steamapp ID
 	public static int playerLevel;
 
 	public static void setInMenus() {
-		updateTime();
 		Scoreboard.resetScoreBoard();
 		location = Location.MENUS;
 		arena = Arena.MENU;
-		updateStatus();
+		updateTime();
 	}
 
 	public static void updateTime() {
@@ -70,7 +69,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		}
 	}
 
-	public static void clearPresence() {
+	public static void resetValues() {
 		Scoreboard.resetScoreBoard();
 		GameStateManager.setInMenus();
 		GameStateManager.ingameCharacter = GameStateManager.menuCharacter = Striker.NONE;
