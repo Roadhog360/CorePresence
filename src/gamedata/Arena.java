@@ -16,11 +16,11 @@ public enum Arena {
 	CLARION_TEST_CHAMBER("GameMapClarionCorp", "clarion_test_chamber_normal", "Clarion Test Chamber"),
 	TAIKO_TEMPLE("GameMapDrums", "taiko_temple", "Taiko Temple"),
 
-	CLARION_TEST_CHAMBER_BASSDROP("GameMapClarionCorp", "clarion_test_chamber_project_bassdrop", "Clarion Test Chamber | Project: Bassdrop"),
-	CLARION_TEST_CHAMBER_EXPANSE("GameMapClarionCorp", "clarion_test_chamber_project_expanse", "Clarion Test Chamber | Project: Expanse"),
-	CLARION_TEST_CHAMBER_MAELSTROM("GameMapClarionCorp", "clarion_test_chamber_project_maelstrom", "Clarion Test Chamber | Project: Maelstrom"),
-	CLARION_TEST_CHAMBER_OBSCURA("GameMapClarionCorp", "clarion_test_chamber_project_obscura", "Clarion Test Chamber | Project: Obscura"),
-	CLARION_TEST_CHAMBER_XENO("GameMapClarionCorp", "clarion_test_chamber_project_xeno", "Clarion Test Chamber | Project: Xeno"),
+	CLARION_TEST_CHAMBER_BASSDROP("GameMapClarionCorpProjectThunderstruck", "clarion_test_chamber_project_bassdrop", "Clarion Test Chamber | Project: Bassdrop"),
+	CLARION_TEST_CHAMBER_EXPANSE("GameMapClarionCorpProjectExpanse", "clarion_test_chamber_project_expanse", "Clarion Test Chamber | Project: Expanse"),
+	CLARION_TEST_CHAMBER_MAELSTROM("GameMapClarionCorpProjectMaelstrom", "clarion_test_chamber_project_maelstrom", "Clarion Test Chamber | Project: Maelstrom"),
+	CLARION_TEST_CHAMBER_OBSCURA("GameMapClarionCorpProjectObscura", "clarion_test_chamber_project_obscura", "Clarion Test Chamber | Project: Obscura"),
+	CLARION_TEST_CHAMBER_XENO("GameMapClarionCorpProjectXeno", "clarion_test_chamber_project_xeno", "Clarion Test Chamber | Project: Xeno"),
 	;
 
 	private final String internalName;
