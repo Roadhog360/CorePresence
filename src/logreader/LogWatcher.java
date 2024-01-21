@@ -16,6 +16,7 @@ public class LogWatcher extends Thread {
 	@Override
 	public void run() {
 		System.out.println("Initializing LogWatcher");
+		System.out.println(Utils.getFilePath());
 		try {
 			watchFile();
 		} catch (InterruptedException e) {
