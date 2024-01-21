@@ -79,6 +79,19 @@ public class LogManager {
 		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Queue Selection: ";
 		if(logLine.startsWith(phrase)) {
 			pendingLocation = Location.getFromKey(JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString());
+			switch(pendingLocation) {
+				case COMPETITIVE:
+				case NORMAL:
+					Scoreboard.setMaxValues(3, 3);
+					break;
+				case COOP_VS_AI:
+				case QUICKPLAY:
+					Scoreboard.setMaxValues(5, 1);
+					break;
+				case PRACTICE:
+					Scoreboard.setMaxValues(0, 0);
+					break;
+			} //TODO: Find how to get custom score values
 			return false;
 		}
 
@@ -87,18 +100,17 @@ public class LogManager {
 			String[] gameStateInfo = logLine.replace(phrase, "").split(" ");
 			String updatedGameState = gameStateInfo[gameStateInfo.length - 1];
 			switch (updatedGameState) {
-				case "Current[EMatchPhase::PostGameSummary]":
-					System.out.println("Resetting game state to menu");
-					GameStateManager.setInMenus();
-					GameStateManager.ingameCharacter = Striker.NONE;
-					return true;
 				case "Current[EMatchPhase::ArenaOverview]":
-					Scoreboard.resetScoreBoard();
-					Scoreboard.setGameState(GameProgress.BEGINNING);
-					GameStateManager.location = pendingLocation;
-					System.out.println("Setting game phase to beginning");
-					GameStateManager.updateTime();
-					return true;
+				case "Current[EMatchPhase::InGame]":
+					if(Scoreboard.getGameState() == GameProgress.MENU) {
+						Scoreboard.resetScoreBoard();
+						GameStateManager.location = pendingLocation;
+						Scoreboard.setGameState(GameStateManager.location == Location.PRACTICE ? GameProgress.PRACTICE : GameProgress.BEGINNING);
+						System.out.println("Setting game phase to beginning");
+						GameStateManager.updateTime();
+						return true;
+					}
+					return false;
 				case "Current[EMatchPhase::VersusScreen]":
 					Scoreboard.setGameState(GameProgress.IN_GAME);
 					System.out.println("Setting game phase to ingame");
@@ -114,28 +126,38 @@ public class LogManager {
 						return true;
 					}
 					return false;
+				case "Current[EMatchPhase::PostGameSummary]":
+				case "Current[EMatchPhase::EndGame]": //Used in practice mode
+					System.out.println("Resetting game state to menu");
+					GameStateManager.setInMenus();
+					GameStateManager.ingameCharacter = Striker.NONE;
+					return true;
 				default:
 					break;
 			}
 		}
 
 		phrase = "LogPMVoiceOverManagerComponent: UPMVoiceOverManagerComponent::ProcessNewEvents - Processing New Event 'VOD_";
-		if(logLine.startsWith(phrase) && logLine.contains("CharacterIntro")) { //For now we determine character selected by VO data. This is unreliable and also late, there's hopefully a better way to do this
-			String voiceData = logLine.replace(phrase, "");
-			voiceData = voiceData.substring(0, voiceData.indexOf("_CharacterIntro"));
-			Striker selectedStriker = Striker.UNKNOWN_UNREGISTERED;
-			for(Striker striker : Striker.values()) { //These don't use character internal name for some reason, let's see if it matches any names...
-				if(striker == Striker.NONE) {
-					continue;
+		if(logLine.startsWith(phrase)) { //For now we determine character selected by VO data. This is unreliable and also late, there's hopefully a better way to do this
+			String find = GameStateManager.location == Location.PRACTICE ? "CharacterSelect" : "CharacterIntro"; //Practice mode sends CharacterSelect VO lines when changing character
+			if(logLine.contains(find)) {
+				String voiceData = logLine.replace(phrase, "");
+				voiceData = voiceData.substring(0, voiceData.indexOf("_" + find));
+				Striker selectedStriker = Striker.UNKNOWN_UNREGISTERED;
+				for (Striker striker : Striker.values()) { //These don't use character internal name for some reason, let's see if it matches any names...
+					if (striker == Striker.NONE) {
+						continue;
+					}
+					if (voiceData.equalsIgnoreCase(striker.getAssetKey()) || voiceData.equalsIgnoreCase(striker.getTooltip())) {
+						selectedStriker = striker;
+						break;
+					}
 				}
-				if(voiceData.equalsIgnoreCase(striker.getAssetKey()) || voiceData.equalsIgnoreCase(striker.getTooltip())) {
-					selectedStriker = striker;
-					break;
-				}
+				GameStateManager.ingameCharacter = selectedStriker;
+				System.out.println("Choosing character in game: " + selectedStriker.getTooltip());
+				return true;
 			}
-			GameStateManager.ingameCharacter = selectedStriker;
-			System.out.println("Choosing character in game: " + selectedStriker.getTooltip());
-			return true;
+			return false;
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
@@ -160,7 +182,7 @@ public class LogManager {
 			String[] scoreInfo = logLine.replace(phrase, "").split(" ");
 			String updatedValue = scoreInfo[scoreInfo.length - 1];//Score to change to is at end of string
 			if(logLine.contains("NumPointsThisSet")) { //Team that scored at beginning of scoreInfo (we trimmed the stuff before it off) + score to change to (at end of value)
-				Scoreboard.setScore(scoreInfo[0].replace("'s", ""), Integer.parseInt(updatedValue));
+				Scoreboard.setMaxValues(scoreInfo[0].replace("'s", ""), Integer.parseInt(updatedValue));
 			} else {
 				if(updatedValue.contains("unset")) {
 					return false;

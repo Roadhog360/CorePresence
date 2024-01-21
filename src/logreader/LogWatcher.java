@@ -25,7 +25,6 @@ public class LogWatcher extends Thread {
 	}
 
 	private final int runEvery = 1000;
-	private boolean firstRun = true;
 
 	private String lastHash = "none";
 
@@ -72,20 +71,21 @@ public class LogWatcher extends Thread {
 
 				String[] lines = newLines.toString().split("\n");
 				for(int i = 0; i < lines.length; i++) {
+					LogManager.setClosed(true);
 					String line = lines[i];
 //						System.out.println(line);
 					if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
 						DiscordRPC.discordClearPresence();
-						LogManager.setClosed(true);
 						GameStateManager.resetValues();
 						return;
 					} else if (line.startsWith("Log file open")) {
 						GameStateManager.resetValues();
+						GameStateManager.setInMenus();
 					} else {
 						LogManager.getActionFor(LogManager.clearLogBrackets(line));
 					}
 
-					if(firstRun && i == lines.length - 1) { //After first run, update status to collected values
+					if(i == lines.length - 1) { //After first run, update status to collected values
 						LogManager.setClosed(false);
 						GameStateManager.updateStatus();
 					}
@@ -94,13 +94,8 @@ public class LogWatcher extends Thread {
 			}
 
 			fh.close();
-			firstRun = false;
 			sleep(runEvery);
 		}
-	}
-
-	public boolean isFirstRun() {
-		return firstRun;
 	}
 
 	private String getSHAHash(File file) {

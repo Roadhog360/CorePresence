@@ -1,5 +1,7 @@
 package gamedata;
 
+import managers.GameStateManager;
+
 public class Scoreboard {
 	private static int teamOneScore = 0;
 	private static int teamOneSetsWon = 0;
@@ -49,7 +51,12 @@ public class Scoreboard {
 		return maxSets;
 	}
 
-	public static void setScore(String team, int score) {
+	public static void setMaxValues(int score, int sets) {
+		maxScore = score;
+		maxSets = sets;
+	}
+
+	public static void setMaxValues(String team, int score) {
 		System.out.println("Changing score for " + (team.equalsIgnoreCase("one") == isAllyTeamOne() ? "ally" : "enemy") + " team to " + score);
 		if(team.equalsIgnoreCase("one")) {
 			teamOneScore = score;

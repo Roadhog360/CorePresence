@@ -2,6 +2,7 @@ package gamedata;
 
 public enum GameProgress {
 	MENU(null),
+	PRACTICE("In practice mode"),
 	BANNING("Choosing a Striker to ban"),
 	BEGINNING("Choosing an Awakening & Gear"),
 	IN_GAME("Score: %s"),
