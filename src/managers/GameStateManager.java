@@ -29,7 +29,6 @@ public class GameStateManager { //1869590 OS Steamapp ID
 
 	public static void updateTime() {
 		currPresence.startTimestamp = System.currentTimeMillis();
-		updateStatus();
 	}
 
 	public static void updateStatus() {

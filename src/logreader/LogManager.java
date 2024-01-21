@@ -93,13 +93,27 @@ public class LogManager {
 			pendingLocation = Location.getFromKey(JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString());
 		}
 
-		phrase = "LogPMPlayerState: APMPlayerState::OnOwnerOnlyRep_MatchPhaseChangesListString - Applying Index '1' by calling APMGameState::PerformCurrentMatchPhaseEvents(EMatchPhase::PreGame, EMatchPhase::ArenaOverview)";
+		phrase = "LogPMGameState: Display: APMGameState::PerformCurrentMatchPhaseEvents - Previous";
 		if(logLine.startsWith(phrase)) {
-			Scoreboard.resetScoreBoard();
-			Scoreboard.setGameState(GameProgress.BEGINNING);
-			GameStateManager.location = pendingLocation;
-			System.out.println("Setting game phase to beginning");
-			return true;
+			String[] gameStateInfo = logLine.replace(phrase, "").split(" ");
+			String updatedGameState = gameStateInfo[gameStateInfo.length - 1];
+			if(updatedGameState.equals("Current[EMatchPhase::PostGameSummary]")) {
+				System.out.println("Resetting game state to menu");
+				GameStateManager.setInMenus();
+				return true;
+			} else if (updatedGameState.equals("Current[EMatchPhase::ArenaOverview]")) {
+				Scoreboard.resetScoreBoard();
+				Scoreboard.setGameState(GameProgress.BEGINNING);
+				GameStateManager.location = pendingLocation;
+				System.out.println("Setting game phase to beginning");
+				GameStateManager.updateTime();
+				return true;
+			} else if (updatedGameState.equals("Current[EMatchPhase::VersusScreen]")) {
+				Scoreboard.setGameState(GameProgress.IN_GAME);
+				System.out.println("Setting game phase to ingame");
+				GameStateManager.updateTime();
+				return true;
+			}
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
