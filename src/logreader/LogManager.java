@@ -100,8 +100,13 @@ public class LogManager {
 			} else if (updatedGameState.equals("Current[EMatchPhase::VersusScreen]")) {
 				Scoreboard.setGameState(GameProgress.IN_GAME);
 				System.out.println("Setting game phase to ingame");
-				GameStateManager.updateTime();
 				return true;
+			} else if (updatedGameState.equals("Current[EMatchPhase::IntermissionMvp]")) {
+				Scoreboard.setGameState(GameProgress.AWAKENING);
+				System.out.println("Entering Awakening Draft");
+			} else if (updatedGameState.equals("Current[EMatchPhase::FaceOffIntro]") && Scoreboard.getGameState() == GameProgress.AWAKENING) {
+				Scoreboard.setGameState(GameProgress.IN_GAME);
+				System.out.println("Leaving Awakening Draft");
 			}
 		}
 
@@ -121,6 +126,7 @@ public class LogManager {
 			}
 			GameStateManager.ingameCharacter = selectedStriker;
 			System.out.println("Choosing character in game: " + selectedStriker.getTooltip());
+			return true;
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
@@ -145,23 +151,22 @@ public class LogManager {
 			if(logLine.contains("NumPointsThisSet")) { //Team that scored at beginning of scoreInfo (we trimmed the stuff before it off) + score to change to (at end of value)
 				Scoreboard.setScore(scoreInfo[0].replace("'s", ""), Integer.parseInt(updatedValue));
 			} else {
+				if(updatedValue.contains("unset")) {
+					return false;
+				}
 				boolean wonMatch = logLine.contains("TeamThatWonMatch");
 				updatedValue = updatedValue.replace("'", "").replace("EAssignedTeam::Team", "");
 				if(wonMatch) { //Winning team is in updatedValue position
 					String teamWonMatch = updatedValue.replace("'", "").replace("Team", "");
-					if(!updatedValue.contains("unset")) {
-						if (Scoreboard.isAllyTeamOne() == teamWonMatch.equalsIgnoreCase("one")) {
-							System.out.println("You won!!!");
-							Scoreboard.setGameState(GameProgress.VICTORY);
-						} else {
-							System.out.println("You lose...");
-							Scoreboard.setGameState(GameProgress.DEFEAT);
-						}
+					if (Scoreboard.isAllyTeamOne() == teamWonMatch.equalsIgnoreCase("one")) {
+						System.out.println("You won!!!");
+						Scoreboard.setGameState(GameProgress.VICTORY);
+					} else {
+						System.out.println("You lose...");
+						Scoreboard.setGameState(GameProgress.DEFEAT);
 					}
 				} else {
-					if(!updatedValue.contains("unset")) {
-						Scoreboard.incrementSetsWon(updatedValue);
-					}
+					Scoreboard.incrementSetsWon(updatedValue);
 				}
 			}
 			return true;

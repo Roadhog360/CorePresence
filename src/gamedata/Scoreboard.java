@@ -8,6 +8,9 @@ public class Scoreboard {
 	private static boolean allyTeamOne = true;
 	private static GameProgress progress = GameProgress.MENU;
 
+	private static int maxScore = 3;
+	private static int maxSets = 3;
+
 	public static int getAllyScore() {
 		return allyTeamOne ? teamOneScore : teamTwoScore;
 	}
@@ -20,8 +23,30 @@ public class Scoreboard {
 		return allyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
 	}
 
-	public static int enemySetsWon() {
+	public static int getEnemySetsWon() {
 		return !allyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
+	}
+
+	public static String getScoreDisplay() {
+		StringBuilder scorecard = new StringBuilder();
+		for(int i = getMaxSets(); i > 0; i--) {
+			scorecard.append(i > getAllySetsWon() ? "◻" : "◼");
+		}
+		scorecard.append(getAllyScore());
+		scorecard.append(" | ");
+		scorecard.append(getEnemyScore());
+		for(int i = 0; i < getMaxSets(); i++) {
+			scorecard.append(i >= getEnemySetsWon() ? "◻" : "◼");
+		}
+		return scorecard.toString();
+	}
+
+	public static int getMaxScore() {
+		return maxScore;
+	}
+
+	public static int getMaxSets() {
+		return maxSets;
 	}
 
 	public static void setScore(String team, int score) {

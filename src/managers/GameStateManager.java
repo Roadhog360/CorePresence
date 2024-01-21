@@ -58,9 +58,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		if(state.getDisplayName() == null) {
 			currPresence.state = null;
 		} else {
-			currPresence.state = String.format(state.getDisplayName(),
-					(Scoreboard.getAllyScore() + "-" + Scoreboard.getAllySetsWon() + " | " +
-							Scoreboard.getEnemyScore() + "-" + Scoreboard.enemySetsWon()));
+			currPresence.state = String.format(state.getDisplayName(), Scoreboard.getScoreDisplay());
 		}
 		if(!LogManager.isClosed()) {
 			DiscordRPC.discordUpdatePresence(currPresence);
