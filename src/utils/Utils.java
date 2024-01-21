@@ -4,7 +4,7 @@ public final class Utils {
 	private static final String UNIX_DEFAULT_LOG_PATH =
 			System.getProperty("user.home") + "/.steam/steam/steamapps/compatdata/1869590/pfx/drive_c/users/steamuser/AppData/Local/OmegaStrikers/Saved/Logs";
 	private static final String WINDOWS_DEFAULT_LOG_PATH =
-			System.getenv("LOCALAPPDATA") + "/Local/OmegaStrikers/Saved/Logs";
+			System.getenv("LOCALAPPDATA") + "/OmegaStrikers/Saved/Logs";
 
 	public static String getFilePath() {
 		if(isWindows()) {

@@ -15,8 +15,7 @@ public class LogWatcher extends Thread {
 
 	@Override
 	public void run() {
-		System.out.println("Initializing LogWatcher");
-		System.out.println(Utils.getFilePath());
+		System.out.println("Initializing LogWatcher in location: " + Utils.getFilePath().replaceAll("\\\\", "/") + "/OmegaStrikers.log");
 		try {
 			watchFile();
 		} catch (InterruptedException e) {
