@@ -99,6 +99,7 @@ public class LogManager {
 			Scoreboard.setGameState(GameProgress.BEGINNING);
 			GameStateManager.location = pendingLocation;
 			System.out.println("Setting game phase to beginning");
+			return true;
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
