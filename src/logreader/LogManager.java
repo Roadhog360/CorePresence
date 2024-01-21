@@ -88,6 +88,7 @@ public class LogManager {
 			if(updatedGameState.equals("Current[EMatchPhase::PostGameSummary]")) {
 				System.out.println("Resetting game state to menu");
 				GameStateManager.setInMenus();
+				GameStateManager.ingameCharacter = Striker.NONE;
 				return true;
 			} else if (updatedGameState.equals("Current[EMatchPhase::ArenaOverview]")) {
 				Scoreboard.resetScoreBoard();
