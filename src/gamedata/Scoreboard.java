@@ -5,26 +5,27 @@ public class Scoreboard {
 	private static int teamOneSetsWon = 0;
 	private static int teamTwoScore = 0;
 	private static int teamTwoSetsWon = 0;
-	private static boolean isAllyTeamOne = true;
+	private static boolean allyTeamOne = true;
 	private static GameProgress progress = GameProgress.MENU;
 
 	public static int getAllyScore() {
-		return isAllyTeamOne ? teamOneScore : teamTwoScore;
+		return allyTeamOne ? teamOneScore : teamTwoScore;
 	}
 
 	public static int getEnemyScore() {
-		return !isAllyTeamOne ? teamOneScore : teamTwoScore;
+		return !allyTeamOne ? teamOneScore : teamTwoScore;
 	}
 
 	public static int getAllySetsWon() {
-		return isAllyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
+		return allyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
 	}
 
 	public static int enemySetsWon() {
-		return !isAllyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
+		return !allyTeamOne ? teamOneSetsWon : teamTwoSetsWon;
 	}
 
 	public static void setScore(String team, int score) {
+		System.out.println("Changing score for " + (team.equalsIgnoreCase("one") == isAllyTeamOne() ? "ally" : "enemy") + " team to " + score);
 		if(team.equalsIgnoreCase("one")) {
 			teamOneScore = score;
 		} else {
@@ -33,10 +34,11 @@ public class Scoreboard {
 	}
 
 	public static void incrementSetsWon(String team) {
-		setsSetsWon(team, (isAllyTeamOne ? teamOneScore : teamTwoScore) + 1);
+		setsSetsWon(team, (allyTeamOne ? teamOneSetsWon : teamTwoSetsWon) + 1);
 	}
 
 	public static void setsSetsWon(String team, int score) {
+		System.out.println("Changing sets won for " + (team.equalsIgnoreCase("one") == isAllyTeamOne() ? "ally" : "enemy") + " team to " + score);
 		if(team.equalsIgnoreCase("one")) {
 			teamOneSetsWon = score;
 		} else {
@@ -58,10 +60,11 @@ public class Scoreboard {
 	}
 
 	public static boolean isAllyTeamOne() {
-		return isAllyTeamOne;
+		return allyTeamOne;
 	}
 
-	public static void setIsAllyTeamOne(boolean teamOne) {
-		isAllyTeamOne = teamOne;
+	public static void setAllyTeamOne(boolean teamOne) {
+		System.out.println("Setting ally team to team " + (teamOne ? "one" : "two"));
+		allyTeamOne = teamOne;
 	}
 }
