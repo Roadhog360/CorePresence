@@ -8,11 +8,8 @@ import net.arikia.dev.drpc.DiscordRPC;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
-import java.util.Scanner;
 
 public class Main {
-
-	private static boolean ready = false;
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -56,7 +53,6 @@ public class Main {
 				System.out.print("#" + user.discriminator);
 			}
 		}).build();
-		ready = true;
 		GameStateManager.setInMenus();
 		DiscordRPC.discordInitialize("1197750595042418768", handler, false);
 		DiscordRPC.discordRegister("1197750595042418768", "");

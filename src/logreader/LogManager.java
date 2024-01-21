@@ -5,12 +5,10 @@ import gamedata.Location;
 import gamedata.Striker;
 import managers.GameStateManager;
 
-import java.util.Locale;
-
 public class LogManager {
 
 	private static boolean closed = false;
-	private static LogWatcher watcher = new LogWatcher();
+	private static final LogWatcher watcher = new LogWatcher();
 
 	public static void init() {
 	}
@@ -91,8 +89,6 @@ public class LogManager {
 
 	/**
 	 * Removes the date and three-digit number in brackets from a log entry, if present.
-	 * @param logLine
-	 * @return
 	 */
 	public static String clearLogBrackets(String logLine) {
 		String findRegex = "^\\[[^\\]]+\\]\\[[^\\]]+\\]\\s*";

@@ -5,7 +5,7 @@ import logreader.LogManager;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
-public class GameStateManager {
+public class GameStateManager { //1869590 OS Steamapp ID
 
 	private static final DiscordRichPresence currPresence = new DiscordRichPresence();
 
@@ -69,5 +69,11 @@ public class GameStateManager {
 			DiscordRPC.discordUpdatePresence(currPresence);
 			DiscordRPC.discordRunCallbacks();
 		}
+	}
+
+	public static void clearPresence() {
+		Scoreboard.INSTANCE.resetScoreBoard();
+		GameStateManager.setInMenus();
+		GameStateManager.ingameCharacter = GameStateManager.menuCharacter = Striker.NONE;
 	}
 }
