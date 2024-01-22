@@ -21,6 +21,11 @@ public enum Arena {
 	CLARION_TEST_CHAMBER_MAELSTROM("GameMapClarionCorpProjectMaelstrom", "clarion_test_chamber_project_maelstrom", "Clarion Test Chamber | Project: Maelstrom"),
 	CLARION_TEST_CHAMBER_OBSCURA("GameMapClarionCorpProjectObscura", "clarion_test_chamber_project_obscura", "Clarion Test Chamber | Project: Obscura"),
 	CLARION_TEST_CHAMBER_XENO("GameMapClarionCorpProjectXeno", "clarion_test_chamber_project_xeno", "Clarion Test Chamber | Project: Xeno"),
+
+	ABOUT_FACE("GameMapAboutFaceXL", "about_face", "About Face"),
+	CORNER_POCKET("GameMapCornerGoalXL", "corner_pocket", "Corner Pocket"),
+	MAP_FLIPPED("GameMapFlippedXL", "map_flipped", "Map Flipped"),
+	BACK_TO_BACK("GameMapBackToBackXL", "back_to_back", "Back to Back"),
 	;
 
 	private final String internalName;

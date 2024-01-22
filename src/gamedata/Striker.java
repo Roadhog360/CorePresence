@@ -26,6 +26,7 @@ public enum Striker {
 	KAZAN("C_UmbrellaUser_C", "kazan", "Kazan"),
 	NAO("C_Healer_C", "nao", "Nao"),
 	MAKO("C_DrumOni_C", "mako", "Mako"),
+	NORK("C_SupercalifragilisticexpialidociousUltraMagneticBlobboSupremeRobot_C", "nork", "Nork"),
 	;
 
 	private final String internalName;

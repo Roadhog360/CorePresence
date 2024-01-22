@@ -135,6 +135,7 @@ public class LogManager {
 				default:
 					break;
 			}
+			return false;
 		}
 
 		phrase = "LogPMVoiceOverManagerComponent: UPMVoiceOverManagerComponent::ProcessNewEvents - Processing New Event 'VOD_";
