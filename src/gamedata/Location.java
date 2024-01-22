@@ -7,7 +7,9 @@ public enum Location {
 	QUICKPLAY("queue:quickplay", "In Quickplay"),
 	COMPETITIVE("queue:ranked:3v3", "In Competitive"),
 	PRACTICE("queue:practice", "Practicing"),
-	CUSTOM("queue:custom", "In a Custom Lobby"),
+	CUSTOM_NORMAL("queue:custom", "In a Custom Game: Normal"),
+	CUSTOM_QUICKPLAY("queue:custom", "In a Custom Game: Quickplay"),
+	CUSTOM_TEATIME("queue:custom", "In a Custom Game: Tea Time Tussle"),
 	;
 
 	private final String key;

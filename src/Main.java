@@ -35,6 +35,7 @@ public class Main {
 		}));
 
 		LogManager.init();
+		GameStateManager.updateTime();
 		initDiscord();
 
 		System.out.println("Running callbacks...");

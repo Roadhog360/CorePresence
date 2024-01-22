@@ -45,9 +45,9 @@ public class LogManager {
 			String rawData = logLine.replace(phrase, "");
 			JsonElement data = JsonParser.parseString(rawData);
 			if(data.isJsonObject()) {
-				if(data.getAsJsonObject().get("type").getAsString().equals("group-statusV2")) {
+				String type = data.getAsJsonObject().get("type").getAsString();
+				if(type.equals("group-statusV2")) {
 					JsonObject playerData = JsonParser.parseString(data.getAsJsonObject().get("strData").getAsString()).getAsJsonObject().get("group").getAsJsonObject();
-
 					JsonArray players = playerData.get("players").getAsJsonArray();
 					for(JsonElement element : players.asList()) {
 						if(element.getAsJsonObject().get("playerId").getAsString().equals(GameStateManager.playerID)) {
@@ -72,26 +72,49 @@ public class LogManager {
 						}
 					}
 					return true;
+				} else if(type.equals("custom-lobby-game-options-v1")) { //Custom games
+					JsonObject lobbyData = JsonParser.parseString(data.getAsJsonObject().get("strData").getAsString()).getAsJsonObject().get("gameOptions").getAsJsonObject();
+					switch(lobbyData.get("gameFormatId").getAsString()) {
+						case "GFD_Ranked":
+							pendingLocation = Location.CUSTOM_NORMAL;
+							Scoreboard.setMaxValues(3, 3);
+							System.out.println("Custom lobby is in: Normal mode");
+							break;
+						case "GFD_QuickPlay":
+							pendingLocation = Location.CUSTOM_QUICKPLAY;
+							Scoreboard.setMaxValues(5, 1);
+							System.out.println("Custom lobby is in: Quickplay mode");
+							break;
+						case "GFD_RGM":
+							pendingLocation = Location.CUSTOM_TEATIME;
+							Scoreboard.setMaxValues(3, 1);
+							System.out.println("Custom lobby is in: Tea Time Tussle mode");
+							break;
+					}
 				}
 			}
+			return false;
 		}
 
 		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Queue Selection: ";
 		if(logLine.startsWith(phrase)) {
-			pendingLocation = Location.getFromKey(JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString());
-			switch(pendingLocation) {
-				case COMPETITIVE:
-				case NORMAL:
-					Scoreboard.setMaxValues(3, 3);
-					break;
-				case COOP_VS_AI:
-				case QUICKPLAY:
-					Scoreboard.setMaxValues(5, 1);
-					break;
-				case PRACTICE:
-					Scoreboard.setMaxValues(0, 0);
-					break;
-			} //TODO: Find how to get custom score values
+			String location = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString();
+			if(!location.equals("queue:custom:NvM")) {
+				pendingLocation = Location.getFromKey(location);
+				switch(pendingLocation) {
+					case COMPETITIVE:
+					case NORMAL:
+						Scoreboard.setMaxValues(3, 3);
+						break;
+					case COOP_VS_AI:
+					case QUICKPLAY:
+						Scoreboard.setMaxValues(5, 1);
+						break;
+					case PRACTICE:
+						Scoreboard.setMaxValues(0, 0);
+						break;
+				}
+			}
 			return false;
 		}
 
@@ -111,6 +134,14 @@ public class LogManager {
 						return true;
 					}
 					return false;
+				case "Current[EMatchPhase::BanSelect]":
+					Scoreboard.setGameState(GameProgress.BANNING);
+					System.out.println("Setting game phase to banning");
+					return true;
+				case "Current[EMatchPhase::BanCelebration]":
+					Scoreboard.setGameState(GameProgress.BEGINNING);
+					System.out.println("Setting game phase back to beginning");
+					return true;
 				case "Current[EMatchPhase::VersusScreen]":
 					Scoreboard.setGameState(GameProgress.IN_GAME);
 					System.out.println("Setting game phase to ingame");
