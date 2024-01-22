@@ -1,5 +1,7 @@
 Grabs your current game info from logs and displays it in Rich Presense (may be a bit slow/not always accurate)
 
+__It is currently only for the PC version of the game!__
+
 CorePresence utilizes log tracking to keep track of the state of the game and display it as your Discord status!
 ![image](https://github.com/Roadhog360/CorePresence/assets/11903511/8143d818-96d0-4039-b873-1fa4203e7933)![image](https://github.com/Roadhog360/CorePresence/assets/11903511/6e39dfb8-691e-495a-9c6d-1580b4e14632)
 
