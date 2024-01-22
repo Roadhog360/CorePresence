@@ -198,10 +198,19 @@ public class LogManager {
 					}
 				}
 				GameStateManager.ingameCharacter = selectedStriker;
-				System.out.println("Choosing character in game: " + selectedStriker.getTooltip());
+				System.out.println("Choosing character in match: " + selectedStriker.getTooltip());
 				return true;
 			}
 			return false;
+		}
+
+		phrase = "LogPMCharacterMovementComponent: Warning: UPMCharacterMovementComponent::OnClientCorrectionReceived - *** Client: Error for ";
+		if(GameStateManager.ingameCharacter == Striker.NONE && GameStateManager.location != Location.MENUS && logLine.startsWith(phrase)) { //If character isn't chosen, we'll set it when the server corrects the position of the character
+			String correctionData = logLine.replace(phrase, "").replace("C_", "");
+			correctionData = correctionData.substring(0, correctionData.indexOf("_C"));
+			GameStateManager.ingameCharacter = Striker.getFromInternalName(correctionData);
+			System.out.println("Choosing character in match: " + GameStateManager.ingameCharacter.getTooltip());
+			return true;
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
