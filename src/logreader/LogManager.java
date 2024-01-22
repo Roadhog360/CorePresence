@@ -169,9 +169,13 @@ public class LogManager {
 			return false;
 		}
 
+		//For now we determine character selected by VO data. This is late, there's hopefully a better way to do this
+		//This works because when a game starts, your character makes a special voice line during the vs. screen
 		phrase = "LogPMVoiceOverManagerComponent: UPMVoiceOverManagerComponent::ProcessNewEvents - Processing New Event 'VOD_";
-		if(logLine.startsWith(phrase)) { //For now we determine character selected by VO data. This is unreliable and also late, there's hopefully a better way to do this
-			String find = GameStateManager.location == Location.PRACTICE ? "CharacterSelect" : "CharacterIntro"; //Practice mode sends CharacterSelect VO lines when changing character
+		if(logLine.startsWith(phrase)) {
+			//Practice mode sends CharacterSelect VO lines when changing character
+			//There's no team practice atm so we can get away with using that to determine our practice character
+			String find = GameStateManager.location == Location.PRACTICE ? "CharacterSelect" : "CharacterIntro";
 			if(logLine.contains(find)) {
 				String voiceData = logLine.replace(phrase, "");
 				voiceData = voiceData.substring(0, voiceData.indexOf("_" + find));

@@ -11,6 +11,8 @@ import java.util.Objects;
 
 public class Main {
 
+	private static final String version = "alpha-1";
+
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
@@ -34,6 +36,7 @@ public class Main {
 			DiscordRPC.discordShutdown();
 		}));
 
+		System.out.println("Starting " + frame.getName() + " (" + version + ")");
 		LogManager.init();
 		GameStateManager.updateTime();
 		initDiscord();
