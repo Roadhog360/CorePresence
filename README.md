@@ -2,7 +2,9 @@ Grabs your current game info from logs and displays it in Rich Presense (may be 
 
 CorePresence utilizes log tracking to keep track of the state of the game and display it as your Discord status!
 ![image](https://github.com/Roadhog360/CorePresence/assets/11903511/8143d818-96d0-4039-b873-1fa4203e7933)![image](https://github.com/Roadhog360/CorePresence/assets/11903511/6e39dfb8-691e-495a-9c6d-1580b4e14632)
+
 It can also show information like current Arena, selected Striker, match score and what phase of the game you are in.
+
 ![image](https://github.com/Roadhog360/CorePresence/assets/11903511/af435977-f252-477a-911c-af4f37ef49b5)
 
 
