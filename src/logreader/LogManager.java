@@ -169,6 +169,14 @@ public class LogManager {
 			return false;
 		}
 
+		phrase = "LogNet: Connection failed; returning to Entry";
+		if(logLine.startsWith(phrase)) { //A "kickback" is how I refer to the bug when you are loading into a game and it kicks you back to the main menu
+			System.out.println("Resetting game state to menu, kickback detected");
+			GameStateManager.setInMenus();
+			GameStateManager.ingameCharacter = Striker.NONE;
+			return true;
+		}
+
 		//For now we determine character selected by VO data. This is late, there's hopefully a better way to do this
 		//This works because when a game starts, your character makes a special voice line during the vs. screen
 		phrase = "LogPMVoiceOverManagerComponent: UPMVoiceOverManagerComponent::ProcessNewEvents - Processing New Event 'VOD_";
