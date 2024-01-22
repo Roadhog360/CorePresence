@@ -1,4 +1,4 @@
-# NOTICE: This application is unofficial is not associated or affiliated with Odyssey Interactive!
+# NOTICE: This application is unofficial and is not associated or affiliated with Odyssey Interactive!
 
 Grabs your current game info from logs and displays it in Rich Presense (may be a bit slow/not always accurate)
 
