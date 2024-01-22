@@ -38,7 +38,7 @@ public class Scoreboard {
 		scorecard.append(" | ");
 		scorecard.append(getEnemyScore());
 		for(int i = 0; i < getMaxSets(); i++) {
-			scorecard.append(i > getEnemySetsWon() ? "_" : "x");
+			scorecard.append(i >= getEnemySetsWon() ? "_" : "x");
 		}
 		return scorecard.toString();
 	}
