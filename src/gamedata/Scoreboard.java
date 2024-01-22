@@ -32,13 +32,13 @@ public class Scoreboard {
 	public static String getScoreDisplay() {
 		StringBuilder scorecard = new StringBuilder();
 		for(int i = getMaxSets(); i > 0; i--) {
-			scorecard.append(i > getAllySetsWon() ? "_" : "X");
+			scorecard.append(i > getAllySetsWon() ? "_" : "x");
 		}
 		scorecard.append(getAllyScore());
 		scorecard.append(" | ");
 		scorecard.append(getEnemyScore());
 		for(int i = 0; i < getMaxSets(); i++) {
-			scorecard.append(i >= getEnemySetsWon() ? "_" : "X");
+			scorecard.append(i > getEnemySetsWon() ? "_" : "x");
 		}
 		return scorecard.toString();
 	}
