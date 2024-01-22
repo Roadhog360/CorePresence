@@ -3,7 +3,7 @@ package gamedata;
 public enum Location {
 	MENUS("", "Browsing Menus"),
 	NORMAL("queue:3v3", "In Normals"),
-	COOP_VS_AI("queue:coopvsai", "In Co-Op Vs. A.I."),
+	COOP_VS_AI("queue:coopvsai", "In Co-Op Vs. AI"),
 	QUICKPLAY("queue:quickplay", "In Quickplay"),
 	COMPETITIVE("queue:ranked:3v3", "In Competitive"),
 	PRACTICE("queue:practice", "Practicing"),

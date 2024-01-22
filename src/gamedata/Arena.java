@@ -6,7 +6,7 @@ public enum Arena {
 	UNKNOWN_UNREGISTERED("", "unknown_stage", "Unknown"),
 
 	AHTEN_CITY("GameMapAhtenCity", "ahten_city", "Ahten City"),
-	AIMI_APP("GameMapDigitalWorld", "aimi_s_app", "Aimi's App"),
+	AIMI_APP("GameMapDigitalWorld", "aimi_s_app", "Ai.Mi's App"),
 	NIGHT_MARKET("GameMapNightMarket", "night_market", "Night Market"),
 	ATLAS_LAB("GameMapAtlasLab", "atlas_lab", "Atlas's Lab"),
 	DEMON_DAIS("GameMapMusicStage", "demon_dais", "Demon Dais"),
