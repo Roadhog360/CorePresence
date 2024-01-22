@@ -13,6 +13,8 @@ It can also show information like current Arena, selected Striker, match score a
 
 
 Issue reports go [here](https://github.com/Roadhog360/CorePresence/issues) and suggestions go [here](https://github.com/Roadhog360/CorePresence/discussions).
-Issue reports or suggestions can also go in Discord if you want, either via `roadhog360` on Discord or in the forum in os-content
+Issue reports or suggestions can also go in Discord if you want, either via `roadhog360` on Discord or in the forum in the server you found it in.
 
 Psst! If you are an Omega Strikers developer, please read my wishlist [here](https://github.com/Roadhog360/CorePresence/discussions/2)! CorePresense works from log tracking, so the addition of simple log messages would make things much easier for me and make log tracking far more reliable in some areas!
+
+If you enjoyed this application, consider buying me a coffee! https://ko-fi.com/roadhog360
