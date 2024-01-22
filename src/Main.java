@@ -16,7 +16,8 @@ public class Main {
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		JFrame frame = new JFrame("Omega Strikers CorePresence");
+		String appname = "Omega Strikers CorePresence";
+		JFrame frame = new JFrame(appname);
 		JLabel text = new JLabel("Now goto Discord and set your active game to: '" + frame.getTitle() + "'");
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 
@@ -36,7 +37,7 @@ public class Main {
 			DiscordRPC.discordShutdown();
 		}));
 
-		System.out.println("Starting " + frame.getName() + " (" + version + ")");
+		System.out.println("Starting " + appname + " (" + version + ")");
 		LogManager.init();
 		GameStateManager.updateTime();
 		initDiscord();
