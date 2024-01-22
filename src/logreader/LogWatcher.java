@@ -31,7 +31,6 @@ public class LogWatcher extends Thread {
 	public void watchFile() throws InterruptedException {
 		File file = null;
 		long retryTime = runEvery * 3L;
-		LogManager.setClosed(true);
 		while (true) { //This is never supposed to end while the program is running
 			try {
 				if(file == null) { //Set it here to catch NoSuchFileException when the log is temporarily gone on restart
