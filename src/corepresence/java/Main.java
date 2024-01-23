@@ -16,7 +16,7 @@ import java.util.Vector;
 
 public class Main {
 
-	private static final String version = "alpha-1";
+	private static final String version = "alpha-2";
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
