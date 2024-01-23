@@ -1,6 +1,4 @@
-package gamedata;
-
-import managers.GameStateManager;
+package corepresence.java.gamedata;
 
 public class Scoreboard {
 	private static int teamOneScore = 0;

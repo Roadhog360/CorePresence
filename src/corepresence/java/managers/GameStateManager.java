@@ -1,7 +1,11 @@
-package managers;
+package corepresence.java.managers;
 
-import gamedata.*;
-import logreader.LogManager;
+import corepresence.java.gamedata.Arena;
+import corepresence.java.gamedata.GameProgress;
+import corepresence.java.gamedata.Location;
+import corepresence.java.gamedata.Rank;
+import corepresence.java.gamedata.Scoreboard;
+import corepresence.java.gamedata.Striker;
 import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 
@@ -25,7 +29,6 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		location = Location.MENUS;
 		arena = Arena.MENU;
 		updateTime();
-		updateStatus();
 	}
 
 	public static void updateTime() {
@@ -61,10 +64,8 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		} else {
 			currPresence.state = String.format(state.getDisplayName(), Scoreboard.getScoreDisplay());
 		}
-		if(!LogManager.isClosed()) {
-			DiscordRPC.discordUpdatePresence(currPresence);
-			DiscordRPC.discordRunCallbacks();
-		}
+		DiscordRPC.discordUpdatePresence(currPresence);
+		DiscordRPC.discordRunCallbacks();
 	}
 
 	public static void resetValues() {

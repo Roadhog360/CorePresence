@@ -1,4 +1,4 @@
-package gamedata;
+package corepresence.java.gamedata;
 
 public enum GameProgress {
 	MENU(null),

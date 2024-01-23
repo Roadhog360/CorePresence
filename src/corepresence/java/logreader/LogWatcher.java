@@ -1,8 +1,8 @@
-package logreader;
+package corepresence.java.logreader;
 
-import managers.GameStateManager;
+import corepresence.java.managers.GameStateManager;
 import net.arikia.dev.drpc.DiscordRPC;
-import utils.Utils;
+import corepresence.java.utils.Utils;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -24,31 +24,46 @@ public class LogWatcher extends Thread {
 		super.run();
 	}
 
-	private final int runEvery = 1000;
+	private static final int runEvery = 1000;
 
 	private String lastHash = "none";
+	private boolean sentWarnings = false;
 
 	public void watchFile() throws InterruptedException {
 		File file = null;
-		long retryTime = runEvery * 3L;
 		while (true) { //This is never supposed to end while the program is running
 			try {
 				if(file == null) { //Set it here to catch NoSuchFileException when the log is temporarily gone on restart
 					file = new File(Utils.getFilePath() + "/OmegaStrikers.log");
 				}
 				startWatchingFile(file);
-				System.out.println("Game closed or restarted, retrying in " + (double)(retryTime / 1000) + " seconds");
-				sleep(retryTime);
+				gameClosedWarning(); //This line is reached of the above loop exited
+				sleepWithErrorHandling(runEvery * 4L);
 			} catch (FileNotFoundException | NoSuchFileException e) {
-				System.out.println("Game closed or restarted, or log file not present, retrying in " + (double)(retryTime / 1000) + " seconds");
-				sleep(retryTime);
+				gameClosedWarning();
+				sleepWithErrorHandling(runEvery * 4L);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
 	}
 
-	private void startWatchingFile(File file) throws InterruptedException, IOException {
+	private void gameClosedWarning() {
+		if(!sentWarnings) {
+			sentWarnings = true;
+			System.out.println("Game closed or restarted, waiting for logs to re-initialize.");
+		}
+	}
+
+	private void sleepWithErrorHandling(long time) {
+		try {
+			sleep(time);
+		} catch (InterruptedException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private void startWatchingFile(File file) throws IOException {
 		String hash = getSHAHash(file);
 		if(lastHash.equals(hash)) {
 			return;
@@ -60,6 +75,11 @@ public class LogWatcher extends Thread {
 			long fileLength = fileAttribs.size();
 			RandomAccessFile fh = new RandomAccessFile(file, "r");
 			if(fileLength > lastPosition) {
+				if(sentWarnings) {
+					sentWarnings = false;
+					System.out.println("Reconnected to game logs.");
+				}
+
 				fh.seek(lastPosition);
 
 				StringBuilder newLines = new StringBuilder();
@@ -69,31 +89,26 @@ public class LogWatcher extends Thread {
 				}
 
 				String[] lines = newLines.toString().split("\n");
-				for(int i = 0; i < lines.length; i++) {
-					LogManager.setClosed(true);
-					String line = lines[i];
-//						System.out.println(line);
-					if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
+				boolean actionPerformed = false;
+				for (String line : lines) {
+					if (corepresence.java.logreader.LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
 						DiscordRPC.discordClearPresence();
 						GameStateManager.resetValues();
 						return;
 					} else if (line.startsWith("Log file open")) {
-						GameStateManager.resetValues();
 						GameStateManager.setInMenus();
-					} else {
-						LogManager.getActionFor(LogManager.clearLogBrackets(line));
+						actionPerformed = true;
+					} else if (corepresence.java.logreader.LogManager.getActionFor(line)) {
+						actionPerformed = true;
 					}
-
-					if(i == lines.length - 1) { //After first run, update status to collected values
-						LogManager.setClosed(false);
-						GameStateManager.updateStatus();
-					}
+				}
+				if(actionPerformed) { //Update status to collected values
+					GameStateManager.updateStatus();
 				}
 				lastPosition = fh.getFilePointer();
 			}
-
 			fh.close();
-			sleep(runEvery);
+			sleepWithErrorHandling(runEvery);
 		}
 	}
 

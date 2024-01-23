@@ -1,13 +1,16 @@
-package logreader;
+package corepresence.java.logreader;
 
 import com.google.gson.*;
-import gamedata.*;
-import managers.GameStateManager;
+import corepresence.java.gamedata.Scoreboard;
+import corepresence.java.gamedata.Striker;
+import corepresence.java.gamedata.Arena;
+import corepresence.java.gamedata.GameProgress;
+import corepresence.java.gamedata.Location;
+import corepresence.java.managers.GameStateManager;
 
 public class LogManager {
 
-	private static boolean closed = false;
-	private static final LogWatcher watcher = new LogWatcher();
+	private static final corepresence.java.logreader.LogWatcher watcher = new corepresence.java.logreader.LogWatcher();
 	private static Location pendingLocation = Location.MENUS;
 
 	public static void init() {
@@ -17,13 +20,12 @@ public class LogManager {
 		watcher.start();
 	}
 
-	public static void getActionFor(String logLine) {
-		if(performAction(logLine.replaceFirst("\\r$", ""))) {
-			try {
-				GameStateManager.updateStatus();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	public static boolean getActionFor(String logLine) {
+		try {
+			return performAction(clearLogBrackets(logLine).replaceFirst("\\r$", ""));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		}
 	}
 
@@ -266,13 +268,5 @@ public class LogManager {
 	public static String clearLogBrackets(String logLine) {
 		String findRegex = "^\\[[^\\]]+\\]\\[[^\\]]+\\]\\s*";
 		return logLine.replaceFirst(findRegex, "");
-	}
-
-	public static void setClosed(boolean closed) {
-		LogManager.closed = closed;
-	}
-
-	public static boolean isClosed() {
-		return closed;
 	}
 }

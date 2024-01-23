@@ -1,4 +1,4 @@
-package utils;
+package corepresence.java.utils;
 
 public final class Utils {
 	private static final String UNIX_DEFAULT_LOG_PATH =

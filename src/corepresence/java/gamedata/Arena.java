@@ -1,4 +1,4 @@
-package gamedata;
+package corepresence.java.gamedata;
 
 public enum Arena {
 	MENU("", "core", "Menus"),
