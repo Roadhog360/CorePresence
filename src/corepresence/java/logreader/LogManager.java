@@ -99,32 +99,34 @@ public class LogManager {
 
 		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Matchmaking Status: ";
 		if(logLine.startsWith(phrase)) {
-			JsonObject queueJson = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject();
-			String queueType = queueJson.get("queued").getAsJsonObject().get("queue").getAsString();
-			if (!queueType.equals("queue:custom:NvM") && !queueType.isEmpty()) {
-				GameStateManager.pendingLocation = Location.getFromKey(queueType);
-				switch (GameStateManager.pendingLocation) {
-					case COMPETITIVE:
-					case NORMAL:
-						Scoreboard.setMaxValues(3, 3);
-						break;
-					case COOP_VS_AI:
-					case QUICKPLAY:
-						Scoreboard.setMaxValues(5, 1);
-						break;
-					case PRACTICE:
-					default:
-						Scoreboard.setMaxValues(0, 0);
-						break;
+			if(GameStateManager.arena == Arena.MENU) {
+				JsonObject queueJson = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject();
+				String queueType = queueJson.get("queued").getAsJsonObject().get("queue").getAsString();
+				if (!queueType.equals("queue:custom:NvM") && !queueType.isEmpty()) {
+					GameStateManager.pendingLocation = Location.getFromKey(queueType);
+					switch (GameStateManager.pendingLocation) {
+						case COMPETITIVE:
+						case NORMAL:
+							Scoreboard.setMaxValues(3, 3);
+							break;
+						case COOP_VS_AI:
+						case QUICKPLAY:
+							Scoreboard.setMaxValues(5, 1);
+							break;
+						case PRACTICE:
+						default:
+							Scoreboard.setMaxValues(0, 0);
+							break;
+					}
 				}
-			}
 
-			String queueStatus = queueJson.get("state").getAsString();
-			if (queueStatus.equals("Idle") && GameStateManager.location == Location.MENUS) {
-				Scoreboard.setGameState(GameProgress.MENU);
-			} else if(Scoreboard.getGameState() != GameProgress.QUEUE && GameStateManager.pendingLocation != Location.PRACTICE && !GameStateManager.pendingLocation.name().toLowerCase().startsWith("custom")) {
-				Scoreboard.setGameState(GameProgress.QUEUE);
-				GameStateManager.updateTime();
+				String queueStatus = queueJson.get("state").getAsString();
+				if (queueStatus.equals("Idle") && GameStateManager.location == Location.MENUS) {
+					Scoreboard.setGameState(GameProgress.MENU);
+				} else if (Scoreboard.getGameState() != GameProgress.QUEUE && GameStateManager.pendingLocation != Location.PRACTICE && !GameStateManager.pendingLocation.name().toLowerCase().startsWith("custom")) {
+					Scoreboard.setGameState(GameProgress.QUEUE);
+					GameStateManager.updateTime();
+				}
 			}
 			return true;
 		}
@@ -136,7 +138,7 @@ public class LogManager {
 			switch (updatedGameState) {
 				case "Current[EMatchPhase::ArenaOverview]":
 				case "Current[EMatchPhase::InGame]":
-					if(Scoreboard.getGameState() == GameProgress.MENU || Scoreboard.getGameState() == GameProgress.QUEUE) {
+					if(Scoreboard.isInMenus()) {
 						Scoreboard.resetScoreBoard();
 						GameStateManager.location = GameStateManager.pendingLocation;
 						Scoreboard.setGameState(GameStateManager.location == Location.PRACTICE ? GameProgress.PRACTICE : GameProgress.BEGINNING);

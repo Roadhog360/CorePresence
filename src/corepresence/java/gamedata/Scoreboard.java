@@ -97,4 +97,8 @@ public class Scoreboard {
 		System.out.println("Setting ally team to team " + (teamOne ? "one" : "two"));
 		allyTeamOne = teamOne;
 	}
+
+	public static boolean isInMenus() {
+		return progress == GameProgress.QUEUE || progress == GameProgress.MENU;
+	}
 }
