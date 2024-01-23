@@ -2,6 +2,7 @@ package corepresence.java.gamedata;
 
 public enum GameProgress {
 	MENU(null),
+	QUEUE("In queue... (%s)"),
 	PRACTICE("In practice mode"),
 	BANNING("Choosing a Striker to ban"),
 	BEGINNING("Choosing an Awakening & Gear"),

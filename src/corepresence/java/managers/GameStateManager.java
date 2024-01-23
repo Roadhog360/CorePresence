@@ -17,6 +17,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 	public static Striker menuCharacter = Striker.NONE;
 
 	public static Location location = Location.MENUS;
+	public static Location pendingLocation = Location.MENUS;
 	public static Arena arena = Arena.MENU;
 	public static Rank rank = Rank.NONE;
 
@@ -26,7 +27,7 @@ public class GameStateManager { //1869590 OS Steamapp ID
 
 	public static void setInMenus() {
 		Scoreboard.resetScoreBoard();
-		location = Location.MENUS;
+		location = pendingLocation = Location.MENUS;
 		arena = Arena.MENU;
 		updateTime();
 	}
@@ -52,17 +53,23 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		currPresence.largeImageKey = arena.getAssetKey();
 		currPresence.largeImageText = arena.getTooltip();
 
-		GameProgress state = Scoreboard.getGameState();
-
-		currPresence.details = location.getDisplayName();
-		if(location.equals(Location.COMPETITIVE) && rank.getTooltip() != null) {
+		if(Scoreboard.getGameState() == GameProgress.QUEUE) {
+			currPresence.details = String.format(Scoreboard.getGameState().getDisplayName(), pendingLocation.getDisplayName());
+		} else {
+			currPresence.details = location.getStatus();
+		}
+		if(rank.getTooltip() != null && (location == Location.COMPETITIVE || (pendingLocation == Location.COMPETITIVE && Scoreboard.getGameState() == GameProgress.QUEUE))) {
 			currPresence.details += " (" + rank.getTooltip() + ")";
 		}
 
-		if(state.getDisplayName() == null) {
+		if(Scoreboard.getGameState().getDisplayName() == null || Scoreboard.getGameState() == GameProgress.QUEUE) {
 			currPresence.state = null;
 		} else {
-			currPresence.state = String.format(state.getDisplayName(), Scoreboard.getScoreDisplay());
+			String state = Scoreboard.getGameState().getDisplayName();
+			if(Scoreboard.getGameState() == GameProgress.IN_GAME) {
+				state = String.format(state, Scoreboard.getScoreDisplay());
+			}
+			currPresence.state = state;
 		}
 		DiscordRPC.discordUpdatePresence(currPresence);
 		DiscordRPC.discordRunCallbacks();

@@ -11,7 +11,6 @@ import corepresence.java.managers.GameStateManager;
 public class LogManager {
 
 	private static final corepresence.java.logreader.LogWatcher watcher = new corepresence.java.logreader.LogWatcher();
-	private static Location pendingLocation = Location.MENUS;
 
 	public static void init() {
 	}
@@ -41,7 +40,7 @@ public class LogManager {
 			return true;
 		}
 
-		//Gets the level of the player, and character
+		//Gets the level of the player, and character, as well as custom lobby status
 		phrase = "LogPMServicesSubsystem: Warning: UPMServicesSubsystem::ConnectWebSocket::<lambda_964673719509e731966eb292ee6d2929>::operator () - WebSocketConnection->OnMessage: ";
 		if(logLine.startsWith(phrase)) {
 			String rawData = logLine.replace(phrase, "");
@@ -78,17 +77,17 @@ public class LogManager {
 					JsonObject lobbyData = JsonParser.parseString(data.getAsJsonObject().get("strData").getAsString()).getAsJsonObject().get("gameOptions").getAsJsonObject();
 					switch(lobbyData.get("gameFormatId").getAsString()) {
 						case "GFD_Ranked":
-							pendingLocation = Location.CUSTOM_NORMAL;
+							GameStateManager.pendingLocation = Location.CUSTOM_NORMAL;
 							Scoreboard.setMaxValues(3, 3);
 							System.out.println("Custom lobby is in: Normal mode");
 							break;
 						case "GFD_QuickPlay":
-							pendingLocation = Location.CUSTOM_QUICKPLAY;
+							GameStateManager.pendingLocation = Location.CUSTOM_QUICKPLAY;
 							Scoreboard.setMaxValues(5, 1);
 							System.out.println("Custom lobby is in: Quickplay mode");
 							break;
 						case "GFD_RGM":
-							pendingLocation = Location.CUSTOM_TEATIME;
+							GameStateManager.pendingLocation = Location.CUSTOM_TEATIME;
 							Scoreboard.setMaxValues(3, 1);
 							System.out.println("Custom lobby is in: Tea Time Tussle mode");
 							break;
@@ -98,12 +97,13 @@ public class LogManager {
 			return false;
 		}
 
-		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Queue Selection: ";
+		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Matchmaking Status: ";
 		if(logLine.startsWith(phrase)) {
-			String location = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject().get("queue").getAsString();
-			if(!location.equals("queue:custom:NvM")) {
-				pendingLocation = Location.getFromKey(location);
-				switch(pendingLocation) {
+			JsonObject queueJson = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject();
+			String queueType = queueJson.get("queued").getAsJsonObject().get("queue").getAsString();
+			if (!queueType.equals("queue:custom:NvM") && !queueType.isEmpty()) {
+				GameStateManager.pendingLocation = Location.getFromKey(queueType);
+				switch (GameStateManager.pendingLocation) {
 					case COMPETITIVE:
 					case NORMAL:
 						Scoreboard.setMaxValues(3, 3);
@@ -113,11 +113,20 @@ public class LogManager {
 						Scoreboard.setMaxValues(5, 1);
 						break;
 					case PRACTICE:
+					default:
 						Scoreboard.setMaxValues(0, 0);
 						break;
 				}
 			}
-			return false;
+
+			String queueStatus = queueJson.get("state").getAsString();
+			if (queueStatus.equals("Idle") && GameStateManager.location == Location.MENUS) {
+				Scoreboard.setGameState(GameProgress.MENU);
+			} else if(Scoreboard.getGameState() != GameProgress.QUEUE && GameStateManager.pendingLocation != Location.PRACTICE && !GameStateManager.pendingLocation.name().toLowerCase().startsWith("custom")) {
+				Scoreboard.setGameState(GameProgress.QUEUE);
+				GameStateManager.updateTime();
+			}
+			return true;
 		}
 
 		phrase = "LogPMGameState: Display: APMGameState::PerformCurrentMatchPhaseEvents - Previous";
@@ -127,9 +136,9 @@ public class LogManager {
 			switch (updatedGameState) {
 				case "Current[EMatchPhase::ArenaOverview]":
 				case "Current[EMatchPhase::InGame]":
-					if(Scoreboard.getGameState() == GameProgress.MENU) {
+					if(Scoreboard.getGameState() == GameProgress.MENU || Scoreboard.getGameState() == GameProgress.QUEUE) {
 						Scoreboard.resetScoreBoard();
-						GameStateManager.location = pendingLocation;
+						GameStateManager.location = GameStateManager.pendingLocation;
 						Scoreboard.setGameState(GameStateManager.location == Location.PRACTICE ? GameProgress.PRACTICE : GameProgress.BEGINNING);
 						System.out.println("Setting game phase to beginning");
 						GameStateManager.updateTime();
@@ -206,22 +215,29 @@ public class LogManager {
 			return false;
 		}
 
-		phrase = "LogPMCharacterMovementComponent: Warning: UPMCharacterMovementComponent::OnClientCorrectionReceived - *** Client: Error for ";
-		if(GameStateManager.ingameCharacter == Striker.NONE && GameStateManager.location != Location.MENUS && logLine.startsWith(phrase)) { //If character isn't chosen, we'll set it when the server corrects the position of the character
-			String correctionData = logLine.replace(phrase, "").replace("C_", "");
-			correctionData = correctionData.substring(0, correctionData.indexOf("_C"));
-			GameStateManager.ingameCharacter = Striker.getFromInternalName(correctionData);
-			System.out.println("Choosing character in match: " + GameStateManager.ingameCharacter.getTooltip());
-			return true;
+		if(GameStateManager.ingameCharacter == Striker.NONE && GameStateManager.location != Location.MENUS) {
+			//If character isn't chosen, we'll set it when the server corrects the position of the character
+			phrase = "LogPMCharacterMovementComponent: Warning: UPMCharacterMovementComponent::OnClientCorrectionReceived - *** Client: Error for ";
+			if(logLine.startsWith(phrase)) {
+				String correctionData = logLine.replace(phrase, "").replace("C_", "");
+				correctionData = correctionData.substring(0, correctionData.indexOf("_C"));
+				GameStateManager.ingameCharacter = Striker.getFromInternalName(correctionData);
+				System.out.println("Choosing character in match: " + GameStateManager.ingameCharacter.getTooltip());
+				return true;
+			}
 		}
 
 		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
 		if(logLine.startsWith(phrase)) {
 			String[] stageInfo = logLine.replace(phrase, "")
 					.replace("[", "").replace("]", "").replace("GTD_", "").split(" ");
-			GameStateManager.arena = Arena.getFromInternalName(stageInfo[stageInfo.length - 1]); //Stage name is at end of string
-			System.out.println("Setting stage to: " + GameStateManager.arena.getTooltip());
-			return true;
+			Arena arena = Arena.getFromInternalName(stageInfo[stageInfo.length - 1]);
+			if(arena != GameStateManager.arena) {
+				GameStateManager.arena = arena; //Stage name is at end of string
+				System.out.println("Setting stage to: " + GameStateManager.arena.getTooltip());
+				return true;
+			}
+			return false;
 		}
 
 		phrase = "LogPMPlayerState: StreamTeamLevel Called, OldTeam";
@@ -269,4 +285,5 @@ public class LogManager {
 		String findRegex = "^\\[[^\\]]+\\]\\[[^\\]]+\\]\\s*";
 		return logLine.replaceFirst(findRegex, "");
 	}
+
 }
