@@ -22,10 +22,10 @@ It can also show information like current Arena, selected Striker, match score a
 ---
 
 ### How do I use it?
-Be sure you have Java installed on your computer. At least Java 8 is required.
-You can then simply run the jar with Java.
-To open the jar with logging, open PowerShell, CMD or your preferred terminal. Make sure it is in the same directory the jar is in, then type `java -jar <jarname>.jar`. Where `<jarname>` should be replaced with the jar's name (Example: `CorePresence-alpha2.jar`)
-Open Omega Strikers on your PC, then simply set your Discord game status to "`Omega Strikers CorePresence`".
+- Be sure you have Java installed on your computer. At least Java 8 is required.
+- You can then simply run the jar with Java
+- To open the jar with logging, open PowerShell, CMD or your preferred terminal. Make sure it is in the same directory the jar is in, then type `java -jar <jarname>.jar`. Where `<jarname>` should be replaced with the jar's name (Example: `CorePresence-alpha2.jar`)
+- Open Omega Strikers on your PC, then simply set your Discord game status to "`Omega Strikers CorePresence`".
 
 ---
 
@@ -35,6 +35,10 @@ Issue reports or suggestions can also go in Discord if you want, either via `roa
 
 Psst! If you are an Omega Strikers developer, please read my wishlist [here](https://github.com/Roadhog360/CorePresence/discussions/2)! CorePresense works from log tracking, so the addition of simple log messages would make things much easier for me and make log tracking far more reliable in some areas!
 
-If you enjoyed this application, consider buying me a coffee! https://ko-fi.com/roadhog360
+---
 
-Thanks to @Marukyu for supplying information about tracking queue status!
+### Special credits
+
+Thanks to [Marukyu](https://github.com/Marukyu) for supplying information about tracking queue status!
+
+**And most importantly, thanks to the Odyssey devs for such a fantastic FREE game!![image](https://github.com/Roadhog360/CorePresence/assets/11903511/ad50bf85-a873-439a-a492-dc7baa046452)**
