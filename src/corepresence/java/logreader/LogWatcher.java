@@ -91,15 +91,22 @@ public class LogWatcher extends Thread {
 				String[] lines = newLines.toString().split("\n");
 				boolean actionPerformed = false;
 				for (String line : lines) {
-					if (corepresence.java.logreader.LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
+					if (LogManager.clearLogBrackets(line).startsWith("Log file closed")) {
 						DiscordRPC.discordClearPresence();
 						GameStateManager.resetValues();
 						return;
 					} else if (line.startsWith("Log file open")) {
 						GameStateManager.setInMenus();
 						actionPerformed = true;
-					} else if (corepresence.java.logreader.LogManager.getActionFor(line)) {
-						actionPerformed = true;
+					} else {
+						try {
+							if (LogManager.getActionFor(line)) {
+								actionPerformed = true;
+							}
+						} catch (Exception e) {
+							System.out.println("Error on log line: " + line);
+							e.printStackTrace();
+						}
 					}
 				}
 				if(actionPerformed) { //Update status to collected values

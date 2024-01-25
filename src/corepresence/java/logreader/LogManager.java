@@ -91,6 +91,16 @@ public class LogManager {
 							Scoreboard.setMaxValues(3, 1);
 							System.out.println("Custom lobby is in: Tea Time Tussle mode");
 							break;
+						case "GFD_1v1Tournament":
+							GameStateManager.pendingLocation = Location.CUSTOM_1V1;
+							Scoreboard.setMaxValues(3, 2);
+							System.out.println("Custom lobby is in: 1v1 Tournament mode");
+							break;
+						case "GFD_Practice":
+							GameStateManager.pendingLocation = Location.PRACTICE;
+							Scoreboard.setMaxValues(0, 0);
+							System.out.println("Custom lobby is in: Practice mode");
+							break;
 					}
 				}
 			}
@@ -144,6 +154,9 @@ public class LogManager {
 						Scoreboard.setGameState(GameStateManager.location == Location.PRACTICE ? GameProgress.PRACTICE : GameProgress.BEGINNING);
 						System.out.println("Setting game phase to beginning");
 						GameStateManager.updateTime();
+						if(GameStateManager.location == Location.PRACTICE) { //Custom practice lobbies made with https://753.network/omega-customs don't play the VO clip when starting practice mode
+							GameStateManager.ingameCharacter = Striker.JULIETTE;
+						}
 						return true;
 					}
 					return false;
@@ -222,7 +235,7 @@ public class LogManager {
 			phrase = "LogPMCharacterMovementComponent: Warning: UPMCharacterMovementComponent::OnClientCorrectionReceived - *** Client: Error for ";
 			if(logLine.startsWith(phrase)) {
 				String correctionData = logLine.replace(phrase, "").replace("C_", "");
-				correctionData = correctionData.substring(0, correctionData.indexOf("_C"));
+				correctionData = correctionData.substring(0, correctionData.indexOf("_"));
 				GameStateManager.ingameCharacter = Striker.getFromInternalName(correctionData);
 				System.out.println("Choosing character in match: " + GameStateManager.ingameCharacter.getTooltip());
 				return true;
@@ -255,14 +268,15 @@ public class LogManager {
 			String[] scoreInfo = logLine.replace(phrase, "").split(" ");
 			String updatedValue = scoreInfo[scoreInfo.length - 1];//Score to change to is at end of string
 			if(logLine.contains("NumPointsThisSet")) { //Team that scored at beginning of scoreInfo (we trimmed the stuff before it off) + score to change to (at end of value)
-				Scoreboard.setMaxValues(scoreInfo[0].replace("'s", ""), Integer.parseInt(updatedValue));
+				int score = Integer.parseInt(updatedValue);
+				String team = scoreInfo[0].replace("'s", "");
+				Scoreboard.setScore(team, score);
 			} else {
 				if(updatedValue.contains("unset")) {
 					return false;
 				}
-				boolean wonMatch = logLine.contains("TeamThatWonMatch");
 				updatedValue = updatedValue.replace("'", "").replace("EAssignedTeam::Team", "");
-				if(wonMatch) { //Winning team is in updatedValue position
+				if(logLine.contains("TeamThatWonMatch")) { //Winning team is in updatedValue position
 					String teamWonMatch = updatedValue.replace("'", "").replace("Team", "");
 					if (Scoreboard.isAllyTeamOne() == teamWonMatch.equalsIgnoreCase("one")) {
 						System.out.println("You won!!!");

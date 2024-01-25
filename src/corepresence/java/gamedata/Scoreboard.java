@@ -1,5 +1,7 @@
 package corepresence.java.gamedata;
 
+import jdk.internal.util.xml.impl.Pair;
+
 public class Scoreboard {
 	private static int teamOneScore = 0;
 	private static int teamOneSetsWon = 0;
@@ -54,8 +56,9 @@ public class Scoreboard {
 		maxSets = sets;
 	}
 
-	public static void setMaxValues(String team, int score) {
-		System.out.println("Changing score for " + (team.equalsIgnoreCase("one") == isAllyTeamOne() ? "ally" : "enemy") + " team to " + score);
+	public static void setScore(String team, int score) {
+		boolean ally = team.equalsIgnoreCase("one") == isAllyTeamOne();
+		System.out.println("Changing score for " + (ally ? "ally" : "enemy") + " team to " + score);
 		if(team.equalsIgnoreCase("one")) {
 			teamOneScore = score;
 		} else {
@@ -64,7 +67,7 @@ public class Scoreboard {
 	}
 
 	public static void incrementSetsWon(String team) {
-		setsSetsWon(team, (allyTeamOne ? teamOneSetsWon : teamTwoSetsWon) + 1);
+		setsSetsWon(team, (team.equalsIgnoreCase("one") == isAllyTeamOne() ? teamOneSetsWon : teamTwoSetsWon) + 1);
 	}
 
 	public static void setsSetsWon(String team, int score) {

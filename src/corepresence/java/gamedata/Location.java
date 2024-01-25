@@ -10,6 +10,7 @@ public enum Location {
 	CUSTOM_NORMAL("queue:custom", "Custom: Competitive", "In a Custom Game: Competitive"),
 	CUSTOM_QUICKPLAY("queue:custom", "Custom: Quickplay", "In a Custom Game: Quickplay"),
 	CUSTOM_TEATIME("queue:custom", "Custom: Tea Time Tussle", "In a Custom Game: Tea Time Tussle"),
+	CUSTOM_1V1("queue:custom", "Custom: 1v1 Tournament", "In a Custom Game: 1v1 Tournament"),//Only available using 753.network
 	;
 
 	private final String key;
