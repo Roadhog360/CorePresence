@@ -16,32 +16,13 @@ import java.util.Vector;
 
 public class Main {
 
-	private static final String version = "alpha-2";
+	private static final String version = "beta-1";
+	private static final String appname = "Omega Strikers CorePresence";
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 
-		String appname = "Omega Strikers CorePresence";
-		JFrame frame = new JFrame(appname);
-
-		frame.getContentPane().setLayout(new FlowLayout());
-		frame.getContentPane().setBackground(new Color(0x5865F2));
-		frame.getContentPane().add(new JLabel("Now goto Discord and set your active game to: '" + frame.getTitle() + "'"), SwingConstants.CENTER);
-		frame.getContentPane().add(new JLabel("Version " + version));
-
-		setWindowIcon(frame);
-
-		frame.setResizable(true);
-		frame.setSize(550, 100);
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-		frame.setVisible(true);
-		frame.setResizable(false);
-
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			System.out.println("Closing Discord hook.");
-			DiscordRPC.discordShutdown();
-		}));
+		setupWindow();
 
 		System.out.println("Starting " + appname + " (" + version + ")");
 		LogManager.init();
@@ -53,6 +34,38 @@ public class Main {
 
 		LogManager.postInit();
 	}
+
+	private static void setupWindow() {
+		JFrame frame = new JFrame(appname);
+		JPanel pane = new JPanel();
+		pane.setLayout(null);
+		frame.setContentPane(pane);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().setBackground(new Color(0x2C2F33));
+		setWindowIcon(frame);
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			System.out.println("Closing Discord hook.");
+			DiscordRPC.discordShutdown();
+		}));
+		frame.setVisible(true);
+		frame.setResizable(false);
+
+		JLabel banner = new JLabel(new ImageIcon(Main.class.getClassLoader().getResource("assets/banner.png")));
+		banner.setBounds(2, 0, 548, 90);
+		pane.add(banner);
+		JLabel instructions = new JLabel("First run? Set your Discord game status to: '" + frame.getTitle() + "'", SwingConstants.CENTER);
+		instructions.setFont(instructions.getFont().deriveFont(Font.BOLD, 14f));
+		instructions.setBounds(2, 65, 548, 65);
+		pane.add(instructions);
+		JLabel ver = new JLabel("Version " + version, SwingConstants.CENTER);
+		ver.setBounds(2, 80, 548, 80);
+		pane.add(ver);
+
+		frame.setSize(550, 190);
+	}
+
+	//https://github.com/Roadhog360/CorePresence/releases/download/<version>/CorePresence_<version>.jar
 
 	static void initDiscord() {
 		DiscordEventHandlers handler = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {

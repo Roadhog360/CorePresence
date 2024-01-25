@@ -23,6 +23,7 @@ public class LogManager {
 		try {
 			return performAction(clearLogBrackets(logLine).replaceFirst("\\r$", ""));
 		} catch (Exception e) {
+			System.err.println("Error on log line: " + logLine);
 			e.printStackTrace();
 			return false;
 		}

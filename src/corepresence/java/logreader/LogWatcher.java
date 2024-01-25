@@ -98,15 +98,8 @@ public class LogWatcher extends Thread {
 					} else if (line.startsWith("Log file open")) {
 						GameStateManager.setInMenus();
 						actionPerformed = true;
-					} else {
-						try {
-							if (LogManager.getActionFor(line)) {
-								actionPerformed = true;
-							}
-						} catch (Exception e) {
-							System.out.println("Error on log line: " + line);
-							e.printStackTrace();
-						}
+					} else if (LogManager.getActionFor(line)) {
+						actionPerformed = true;
 					}
 				}
 				if(actionPerformed) { //Update status to collected values
