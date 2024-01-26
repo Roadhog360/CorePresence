@@ -67,7 +67,7 @@ public class Scoreboard {
 	}
 
 	public static void incrementSetsWon(String team) {
-		setsSetsWon(team, (team.equalsIgnoreCase("one") == isAllyTeamOne() ? teamOneSetsWon : teamTwoSetsWon) + 1);
+		setsSetsWon(team, (team.equalsIgnoreCase("one") ? teamOneSetsWon : teamTwoSetsWon) + 1);
 	}
 
 	public static void setsSetsWon(String team, int score) {
