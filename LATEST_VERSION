@@ -1,4 +1,4 @@
-0
-beta-1
+1
+beta-2
 #This file is used to store the latest version and its URL, for the purpose of notifying users when a new update is ready.
 #The first number is an internal version number used to keep track of updates (so an in-progress version built from source won't trigger an update check)
