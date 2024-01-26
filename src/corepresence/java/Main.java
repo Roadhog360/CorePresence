@@ -11,8 +11,8 @@ import javax.swing.*;
 
 public class Main {
 
-	public static final String version = "beta-1";
-	public static final int internalVersion = 0;
+	public static final String version = "beta-2";
+	public static final int internalVersion = 1;
 
 	public static void main(String[] args) throws Exception {
 		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
