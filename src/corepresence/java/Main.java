@@ -11,7 +11,7 @@ import javax.swing.*;
 
 public class Main {
 
-	public static final String version = "beta-2";
+	public static final String version = "1.0";
 	public static final int internalVersion = 1;
 
 	public static void main(String[] args) throws Exception {

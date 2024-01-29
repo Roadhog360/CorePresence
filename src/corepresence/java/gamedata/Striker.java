@@ -40,7 +40,7 @@ public enum Striker {
 	}
 
 	Striker() {
-		this("", null, null);
+		this("", "", "");
 	}
 
 	public String getAssetKey() {

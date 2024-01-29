@@ -15,7 +15,7 @@ public enum Rank {
 	}
 
 	Rank() {
-		this(null);
+		this("");
 	}
 
 	public String getTooltip() {

@@ -1,5 +1,6 @@
 package corepresence.java.managers;
 
+import corepresence.java.Main;
 import corepresence.java.gamedata.Arena;
 import corepresence.java.gamedata.GameProgress;
 import corepresence.java.gamedata.Location;
@@ -51,18 +52,22 @@ public class GameStateManager { //1869590 OS Steamapp ID
 		}
 
 		currPresence.largeImageKey = arena.getAssetKey();
-		currPresence.largeImageText = arena.getTooltip();
+		currPresence.largeImageText = arena.getTooltip() + " (CorePresence " + Main.version + ")";
 
 		if(Scoreboard.getGameState() == GameProgress.QUEUE) {
-			currPresence.details = String.format(Scoreboard.getGameState().getDisplayName(), pendingLocation.getDisplayName());
+			StringBuilder queueStatus = new StringBuilder(Scoreboard.getGameState().getDisplayName());
+			if(pendingLocation.getDisplayName().isEmpty()) {
+				queueStatus.append(" (").append(pendingLocation.getDisplayName()).append(")");
+			}
+			currPresence.details = String.format(Scoreboard.getGameState().getDisplayName());
 		} else {
 			currPresence.details = location.getStatus();
 		}
-		if(rank.getTooltip() != null && (location == Location.COMPETITIVE || (pendingLocation == Location.COMPETITIVE && Scoreboard.getGameState() == GameProgress.QUEUE))) {
+		if(!rank.getTooltip().isEmpty() && (location == Location.COMPETITIVE || (pendingLocation == Location.COMPETITIVE && Scoreboard.getGameState() == GameProgress.QUEUE))) {
 			currPresence.details += " (" + rank.getTooltip() + ")";
 		}
 
-		if(Scoreboard.getGameState().getDisplayName() == null || Scoreboard.getGameState() == GameProgress.QUEUE) {
+		if(Scoreboard.getGameState().getDisplayName().isEmpty() || Scoreboard.getGameState() == GameProgress.QUEUE) {
 			currPresence.state = null;
 		} else {
 			String state = Scoreboard.getGameState().getDisplayName();

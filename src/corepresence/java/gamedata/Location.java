@@ -1,11 +1,11 @@
 package corepresence.java.gamedata;
 
 public enum Location {
-	MENUS("", "", "Browsing Menus"),
-	NORMAL("queue:3v3", "Normal", "In Normals"),
-	COOP_VS_AI("queue:coopvsai", "Co-Op Vs. AI", "In Co-Op Vs. AI"),
-	QUICKPLAY("queue:quickplay", "Quickplay", "In Quickplay"),
-	COMPETITIVE("queue:ranked:3v3", "Competitive", "In Competitive"),
+	MENUS("", "", "In Menus"),
+	NORMAL("queue:3v3", "Normal", "Playing Normal"),
+	COOP_VS_AI("queue:coopvsai", "Co-Op Vs. AI", "Playing Co-Op Vs. AI"),
+	QUICKPLAY("queue:quickplay", "Quickplay", "Playing Quickplay"),
+	COMPETITIVE("queue:ranked:3v3", "Competitive", "Playing Competitive"),
 	PRACTICE("queue:practice", "Practice", "Practicing"),
 	CUSTOM_NORMAL("queue:custom", "Custom: Competitive", "In a Custom Game: Competitive"),
 	CUSTOM_QUICKPLAY("queue:custom", "Custom: Quickplay", "In a Custom Game: Quickplay"),
