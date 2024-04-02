@@ -32,6 +32,7 @@ public class LogManager {
 	private static boolean performAction(String logLine) {
 		//Gets the username of the player
 		String phrase = "LogPMIdentitySubsystem: UPMIdentitySubsystem::HandleSuccessfulLoginResponse - Logged in as user: ";
+		String phrase2;
 		if(logLine.startsWith(phrase)) {
 			String name = logLine.replace(phrase, "");
 			GameStateManager.playerName = name.substring(0, name.indexOf(" with id"));
@@ -42,9 +43,10 @@ public class LogManager {
 		}
 
 		//Gets the level of the player, and character, as well as custom lobby status
-		phrase = "LogPMServicesSubsystem: Warning: UPMServicesSubsystem::ConnectWebSocket::<lambda_964673719509e731966eb292ee6d2929>::operator () - WebSocketConnection->OnMessage: ";
-		if(logLine.startsWith(phrase)) {
-			String rawData = logLine.replace(phrase, "");
+		phrase = "LogPMServicesSubsystem: Warning: UPMServicesSubsystem::ConnectWebSocket::";
+		phrase2 = "WebSocketConnection->OnMessage:";
+		if(logLine.startsWith(phrase) && logLine.contains(phrase2)) {
+			String rawData = logLine.substring(logLine.indexOf(phrase2) + phrase2.length() + 1);
 			JsonElement data = JsonParser.parseString(rawData);
 			if(data.isJsonObject()) {
 				String type = data.getAsJsonObject().get("type").getAsString();
@@ -108,10 +110,11 @@ public class LogManager {
 			return false;
 		}
 
-		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::<lambda_051a9b8984f58825f631440d1455f646>::operator () - Matchmaking Status: ";
-		if(logLine.startsWith(phrase)) {
+		phrase = "LogPMUIDataModel: UPMMatchmakingUIData::UpdateMatchmakingData::";
+		phrase2 = "Matchmaking Status:";
+		if(logLine.startsWith(phrase) && logLine.contains(phrase2)) {
 			if(GameStateManager.arena == Arena.MENU) {
-				JsonObject queueJson = JsonParser.parseString(logLine.replace(phrase, "")).getAsJsonObject();
+				JsonObject queueJson = JsonParser.parseString(logLine.substring(logLine.indexOf(phrase2) + phrase2.length() + 1)).getAsJsonObject();
 				String queueType = queueJson.get("queued").getAsJsonObject().get("queue").getAsString();
 				if (!queueType.equals("queue:custom:NvM") && !queueType.isEmpty()) {
 					GameStateManager.pendingLocation = Location.getFromKey(queueType);
@@ -243,10 +246,9 @@ public class LogManager {
 			}
 		}
 
-		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData::<lambda_ecb4b71faa12728bcf33e4dfa87f5a6f>::operator () - Changed from Terrain ";
+		phrase = "LogPMGameState: APMGameState::OnRep_CurrentTerrainData";
 		if(logLine.startsWith(phrase)) {
-			String[] stageInfo = logLine.replace(phrase, "")
-					.replace("[", "").replace("]", "").replace("GTD_", "").split(" ");
+			String[] stageInfo = logLine.replace("[", "").replace("]", "").replace("GTD_", "").split(" ");
 			Arena arena = Arena.getFromInternalName(stageInfo[stageInfo.length - 1]);
 			if(arena != GameStateManager.arena) {
 				GameStateManager.arena = arena; //Stage name is at end of string
