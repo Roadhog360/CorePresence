@@ -4,12 +4,17 @@
 #### NOTICE: This application is unofficial and is not associated or affiliated with Odyssey Interactive!
 ---
 
+![image](https://github.com/user-attachments/assets/68f03288-6eb8-4c77-ab53-85c64bc3be66)
+# Hello!
+I'm Rasmus, and today I'm enthralled to show us our latest creation straight from the labs of Clarion Corp; CorePresence! 
+
 ### What is this?
-Grabs your current game info from logs and displays it in Rich Presense (may be a bit slow/not always accurate)
+CorePresense is a revolutionary invention by Nao, invented to proudly show off your current match information! Other Strikers who have Discord downloaded may see the game information displayed right on your profile for all to see!
+Our new product operates by simply reading the log file of the game from Steam to collect information about your Striking endeavors.
 
 __It is currently only for the PC version of the game!__
 
-CorePresence utilizes log tracking to keep track of the state of the game and display it as your Discord status!
+Not sold on it yet? Take a look for yourself! Here's how our captivating new technology will look on your Discord profile:
 
 ![image](https://github.com/Roadhog360/CorePresence/assets/11903511/8143d818-96d0-4039-b873-1fa4203e7933)![image](https://github.com/Roadhog360/CorePresence/assets/11903511/6e39dfb8-691e-495a-9c6d-1580b4e14632)
 
@@ -32,6 +37,8 @@ It can also show information like current Arena, selected Striker, match score a
 ### Report an issue / Suggest a feature
 Issue reports go [here](https://github.com/Roadhog360/CorePresence/issues) and suggestions go [here](https://github.com/Roadhog360/CorePresence/discussions).
 Issue reports or suggestions can also go in Discord if you want, either via `roadhog360` on Discord or in the forum in the server you found it in.
+
+That's all for now! We hope that you are as excited about this incredible new technology as we are! We at Clarion Corp will be sure to keep this page updated as the simple little applet continues to evolve and change! 
 
 Psst! If you are an Omega Strikers developer, please read my wishlist [here](https://github.com/Roadhog360/CorePresence/discussions/2)! CorePresense works from log tracking, so the addition of simple log messages would make things much easier for me and make log tracking far more reliable in some areas!
 
